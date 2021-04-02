@@ -1,0 +1,21 @@
+Biblioteka statyczna: 
+
+Operacja: merge files
+Czas rzeczywisty: 0.130000
+Czas uzytkownika: 0.120000
+Czas systemowy: 0.000000
+
+Operacja: merge files
+Czas rzeczywisty: 0.060000
+Czas uzytkownika: 0.060000
+Czas systemowy: 0.000000
+
+Operacja: merge files
+Czas rzeczywisty: 0.560000
+Czas uzytkownika: 0.540000
+Czas systemowy: 0.010000
+
+Operacja: merge files
+Czas rzeczywisty: 3.310000
+Czas uzytkownika: 3.260000
+Czas systemowy: 0.060000

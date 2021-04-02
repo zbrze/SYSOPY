@@ -1,0 +1,24 @@
+19655,  19656,  19657,  19658,  19659,  
+Czas rzeczywisty: 0.070000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+
+19663,  19664,  
+Czas rzeczywisty: 0.040000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+
+19666,  19667,  
+Czas rzeczywisty: 0.290000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+
+19669,  19671,  19672,  19673,  19674,  19675,  
+Czas rzeczywisty: 1.670000
+Czas uzytkownika: 0.010000
+Czas systemowy: 0.000000
+
+
