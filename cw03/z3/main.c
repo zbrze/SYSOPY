@@ -1,23 +1,11 @@
-/*Napisz program, który rozpoczynając od katalogu podanego jako pierwszy parametr uruchomienia, idąc w głąb drzewa katalogów, 
-znajdzie pliki zawierające łańcuch podany jako drugi parametr uruchomienia programu. Przeszukiwanie każdego z podkatalogów
-powinno odbyć się w osobnym procesie potomnym. Wydruk wyniku wyszukiwania poprzedź wypisaniem ścieżki względnej od katalogu
-podanego jako argument uruchomienia oraz numeru PID procesu odpowiedzialnego za przeglądanie określonego (pod)katalogu.
-Przeszukiwanie powinno obejmować pliki tekstowe i pomijać pliki binarne/wykonywalne/obiektowe etc. Program jako trzeci parametr powinien
-przyjmować maksymalną głębokość przeszukiwania licząc od katalogu podanego jako pierwszy parametr.*/
 #define _GNU_SOURCE
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <sys/wait.h>
-#include <sys/types.h>
-#include<string.h>
+#include <string.h>
 #include <unistd.h>
-#include <sys/times.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <regex.h>
 #include <dirent.h>
-#define __USE_XOPEN_EXTENDED 1
 
 char* get_ext(const char* file){
     const char *dot = strrchr(file, '.');
@@ -72,7 +60,8 @@ void find_dir(char* path, int depth, int max_depth, char* str_to_find){
                 if(S_ISDIR(buffer.st_mode)){
                     
                     printf("\nJestem procesem %d w katalogu %s\n", getpid(), new_path);
-                     if(fork() == 0) return find_dir(new_path, ++depth, max_depth, str_to_find);
+                    if(fork() == 0) return find_dir(new_path, ++depth, max_depth, str_to_find);
+                    wait(NULL);
                 }
                 else{
                     if(check_if_text(get_ext(new_path)))
@@ -94,5 +83,8 @@ int main(int argc, char* argv[]) {
     find_dir(dir, 0, max_depth, find_str);
 
 }
+
+
+
 
 
