@@ -1,4 +1,4 @@
-# SYSOPY
+# ZESTAW 3
 Tworzenie procesów. Środowisko procesu, sterowanie procesami.
 
 
