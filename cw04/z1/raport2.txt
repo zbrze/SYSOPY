@@ -1,0 +1,91 @@
+1.FORK
+    | DYSPOZYCJA      DZIEDZICZONY        UWAGI
+    |   ignore           tak
+    |   handler          nie            
+    |    mask            tak             
+    |   pending          nie
+2.EXEC:
+    po użyciu funkcji execl():
+    | DYSPOZYCJA      DZIEDZICZONY        UWAGI
+    |   ignore           tak
+    |   handler          nie            zakomentowany w makefile
+    |    mask            tak             
+    |   pending          tak
+
+
+3.Wywołanie fork_test:
+
+----------------------TEST IGNORING:----------------------
+Father process:
+Process 22468 is ignoring User defined signal 1
+                    ***FORKING***                    
+Raising signal in child process: 22469
+Process 22469 is ignoring User defined signal 1
+
+==========================================================
+
+
+----------------------TEST MASKING:----------------------
+Signal User defined signal 1 is waiting in process: 22470
+                    ***FORKING***                    
+Raising signal in child process: 22471
+Signal User defined signal 1 is waiting in process: 22471
+
+==========================================================
+
+
+----------------------TEST HANDLING:----------------------
+Father process: Process 22472 has received signal: User defined signal 1 
+                    ***FORKING***                    
+Raising signal in child process: 22473
+Process 22473 has received signal: User defined signal 1 
+
+==========================================================
+
+
+----------------------TEST PENDING:----------------------
+Parent process: 
+Signal User defined signal 1 is waiting in process: 22474
+                    ***FORKING***                    
+Signal User defined signal 1 is NOT waiting in process: 22475
+
+==========================================================
+
+
+4.Wywołanie test_exec:
+
+
+----------------------TEST IGNORING:----------------------
+Father process:
+Process 22602 is ignoring User defined signal 1
+
+                    ***IN EXEC***                    
+Raising signal in excec: 
+Process 22602 is ignoring User defined signal 1
+
+==========================================================
+
+
+#./main.o handler 10 exec - testowanie wywala sie
+
+
+----------------------TEST MASKING:----------------------
+Signal User defined signal 1 is waiting in process: 22604
+
+                    ***IN EXEC***                    
+Raising signal in excec: 
+Signal User defined signal 1 is waiting in process: 22604
+
+==========================================================
+
+
+
+----------------------TEST PENDING:----------------------
+Parent process: 
+Signal User defined signal 1 is waiting in process: 22605
+
+                    ***IN EXEC***                    
+Checking if signal raised in parent is still waiting:
+Signal User defined signal 1 is waiting in process: 22605
+
+==========================================================
