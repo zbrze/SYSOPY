@@ -4,128 +4,84 @@
 #include <stdlib.h>
 #include <string.h>
 
-int sigusr1_counter = 0;
-int got_usr1 = 0;
-int sent_usr2 = 0;
-int SIG_1, SIG_2;
-char* MODE;
 
+char* MODE = NULL;
 
-void handler(int sig, siginfo_t *sig_inf, void *ucontext){
-    printf("Ive catched: %s\n", strsignal(sig)); 
+int RECEIVED_COUNT = 0;
+int ALL_SIG_NUM = 0;
 
-    if(sig == 12 || sig == 35){
-        printf("\nreceived signals: %d", got_usr1);
+int SIG_START;
+int SIG_STOP;
+pid_t CATCHER_PID = 0; 
+
+void signal_handler(int sig, siginfo_t* sig_info, void* ucontext){
+    if (sig == SIG_STOP){
+        printf("*Sender Handler*: I've received %d signals, while I've sent %d.\n",RECEIVED_COUNT, ALL_SIG_NUM);
+        printf("SENDER EXIT\n");
         exit(0);
     }
-    got_usr1++;
-    
-}
-void sigqueue_handler(int sig, siginfo_t *sig_inf, void *ucontext){
-    printf("Ive catched: %s, of index: %d\n", strsignal(sig), sig_inf->si_value.sival_int); 
-    if(sig == 12){
-        printf("\nreceived signals: %d", got_usr1);
-        exit(0);
-    }
-    got_usr1++;
+    RECEIVED_COUNT++;
+    if (!strcmp(MODE, "sigqueue")) printf("*Sender Handler*: I've received signal of index: %d.\n",sig_info -> si_value.sival_int);
     
 }
 
-
-int send_kill(pid_t cather, int sig_number){
-     for(int i = 0; i < sig_number; i++){ 
-         if(!kill(cather, SIGUSR1)) sigusr1_counter++;
-         sleep(0.2);
-         }
-    sleep(2);
-    if(sigusr1_counter == sig_number){ 
-        if(!kill(cather, SIGUSR2)) sent_usr2 = 1;
-        return 0;
-    }
-    return -1;
-}
-
-
-int send_sigrt(pid_t cather, int sig_number){
-    for(int i = 0; i < sig_number; i++){ 
-         if(!kill(cather, SIGRTMIN)) sigusr1_counter++;
-         sleep(0.2);
-         }
-    sleep(2);
-    if(sigusr1_counter == sig_number){ 
-        if(!kill(cather, SIGRTMIN + 1)) sent_usr2 = 1;
-        return 0;
-    }
-    return -1;
-}
-
-int send_sigqueue(pid_t cather, int sig_number){
-    for(int i = 0; i < sig_number; i++){ 
+void send_sig(){
+    if (!strcmp(MODE, "sigqueue")){
         union sigval value;
-        value.sival_int = i;
-        if(!sigqueue(cather, SIGUSR1, value)) sigusr1_counter++;
-         sleep(0.2);
-         }
-    sleep(2);
-    if(sigusr1_counter == sig_number){ 
-        union sigval value;
-        value.sival_int = sig_number;
-        if(!sigqueue(cather, SIGUSR2, value)) sent_usr2 = 1;
-        return 0;
+        for (int i=0; i < ALL_SIG_NUM; i++){
+            value.sival_int = i;
+             sigqueue(CATCHER_PID, SIG_START, value);
+        }
+        sigqueue(CATCHER_PID, SIG_STOP, value);
     }
-    return -1;
+    else{
+        for (int i=0; i < ALL_SIG_NUM; i++) kill(CATCHER_PID, SIG_START);
+        kill(CATCHER_PID, SIG_STOP);
+    }
+    
 }
 
 int main(int argc, char** argv){
     //argv[1] = how many, argv[2] = which send mode (kill, sigrt, sigqueue), argv[3] = catcher pid
     if(argc != 4){
-        printf("Too few arguments");
+        printf("Too few arguments\n");
         return -1;
     }
+    printf("I'm a sender!\n");
     MODE = argv[2];
+    CATCHER_PID = atoi(argv[3]);
+    ALL_SIG_NUM = atoi(argv[1]);
+    sigset_t mask;   
+    sigfillset(&mask);
 
 
-    if(!strcmp(MODE, "sigrt")){
-        SIG_1 = SIGRTMIN;
-        SIG_2 = SIGRTMIN + 1;
-    }else{
-        SIG_1 = SIGUSR1;
-        SIG_2 = SIGUSR2;
+    if (!strcmp(MODE, "sigrt")){
+        sigdelset(&mask, SIGRTMIN);
+        sigdelset(&mask, SIGRTMIN + 1);
+        SIG_START = SIGRTMIN;
+        SIG_STOP = SIGRTMIN + 1;
     }
-
-    struct sigaction action;
-    sigemptyset(&action.sa_mask);
-
-    if(!strcmp(MODE, "sigqueue")){
-        action.sa_sigaction = sigqueue_handler;
-    }else{
-        action.sa_sigaction = handler;
+    else{
+        sigdelset(&mask, SIGUSR1);
+        sigdelset(&mask, SIGUSR2);
+        SIG_START = SIGUSR1;
+        SIG_STOP = SIGUSR2;
     }
     
-    action.sa_flags = SA_SIGINFO;
-    sigaction(SIG_1, &action, NULL);
-
+    struct sigaction action;
     sigemptyset(&action.sa_mask);
-    sigaction(SIG_2, &action, NULL);
+    sigaddset(&action.sa_mask, SIG_START);
+    sigaddset(&action.sa_mask, SIG_STOP);
+    action.sa_flags = SA_SIGINFO;
+    action.sa_sigaction = signal_handler;  
+    sigaction(SIG_START, &action, NULL);
+    sigaction(SIG_STOP, &action, NULL);
 
-    int sig_num = atoi(argv[1]);
-    pid_t catcher_pid = atoi(argv[3]);
-    int res = 1;
-
-    if(!strcmp(MODE, "kill")) res = send_kill(catcher_pid, sig_num);
-    else if(!strcmp(MODE, "sigrt")) res = send_sigrt(catcher_pid, sig_num);
-    else if(!strcmp(MODE, "sigqueue")) res = send_sigqueue(catcher_pid, sig_num);
-    else{ 
-        printf("wrong sending mode");
-        return -1;
-        }
-    if(!res){
-        printf("start catching:\n");
-        fflush(stdout);
-        while(1){
-            sleep(2);
-        }
+    send_sig();
+     
+    while(1){
+        sleep(1);
     }
-    if(sigusr1_counter == sig_num) return 0;
-    return -1;
+    
+    return 0;
 }
