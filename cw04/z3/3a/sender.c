@@ -5,31 +5,39 @@
 #include <string.h>
 
 int sigusr1_counter = 0;
-int got_usr2 = 0;
+int got_usr1 = 0;
 int sent_usr2 = 0;
-
-void start_catching(){
-    printf("Start catching started\n");
-    while(1){
-        sleep(0.5);
-    }
-}
+int SIG_1, SIG_2;
+char* MODE;
 
 
-void handler_sigusr1(int sig, siginfo_t *sig_inf, void *ucontext){
+void handler(int sig, siginfo_t *sig_inf, void *ucontext){
     printf("Ive catched: %s\n", strsignal(sig)); 
+
+    if(sig == 12 || sig == 35){
+        printf("\nreceived signals: %d", got_usr1);
+        exit(0);
+    }
+    got_usr1++;
     
 }
-void handler_sigusr2(int sig){
-    printf("Ive catched: %s - sending ended\n", strsignal(sig));
-    got_usr2 = 1;
+void sigqueue_handler(int sig, siginfo_t *sig_inf, void *ucontext){
+    printf("Ive catched: %s, of index: %d\n", strsignal(sig), sig_inf->si_value.sival_int); 
+    if(sig == 12){
+        printf("\nreceived signals: %d", got_usr1);
+        exit(0);
+    }
+    got_usr1++;
+    
 }
+
+
 int send_kill(pid_t cather, int sig_number){
      for(int i = 0; i < sig_number; i++){ 
          if(!kill(cather, SIGUSR1)) sigusr1_counter++;
          sleep(0.2);
          }
-    sleep(3);
+    sleep(2);
     if(sigusr1_counter == sig_number){ 
         if(!kill(cather, SIGUSR2)) sent_usr2 = 1;
         return 0;
@@ -38,21 +46,34 @@ int send_kill(pid_t cather, int sig_number){
 }
 
 
-
-
-void send_sigrt(pid_t cather, int sig_number){
-    for(int i = 0; i < sig_number; i++) kill(cather, SIGUSR1);
-}
-
-void send_sigqueue(pid_t cather, int sig_number){
-    union sigval value;
+int send_sigrt(pid_t cather, int sig_number){
     for(int i = 0; i < sig_number; i++){ 
-         if(!sigqueue(cather, SIGUSR1, value)) sigusr1_counter++;
+         if(!kill(cather, SIGRTMIN)) sigusr1_counter++;
          sleep(0.2);
          }
-         sleep(1);
-         if(sigusr1_counter == sig_number) sigqueue(cather, SIGUSR2, value);
-        sleep(2);
+    sleep(2);
+    if(sigusr1_counter == sig_number){ 
+        if(!kill(cather, SIGRTMIN + 1)) sent_usr2 = 1;
+        return 0;
+    }
+    return -1;
+}
+
+int send_sigqueue(pid_t cather, int sig_number){
+    for(int i = 0; i < sig_number; i++){ 
+        union sigval value;
+        value.sival_int = i;
+        if(!sigqueue(cather, SIGUSR1, value)) sigusr1_counter++;
+         sleep(0.2);
+         }
+    sleep(2);
+    if(sigusr1_counter == sig_number){ 
+        union sigval value;
+        value.sival_int = sig_number;
+        if(!sigqueue(cather, SIGUSR2, value)) sent_usr2 = 1;
+        return 0;
+    }
+    return -1;
 }
 
 int main(int argc, char** argv){
@@ -61,22 +82,39 @@ int main(int argc, char** argv){
         printf("Too few arguments");
         return -1;
     }
+    MODE = argv[2];
+
+
+    if(!strcmp(MODE, "sigrt")){
+        SIG_1 = SIGRTMIN;
+        SIG_2 = SIGRTMIN + 1;
+    }else{
+        SIG_1 = SIGUSR1;
+        SIG_2 = SIGUSR2;
+    }
+
     struct sigaction action;
     sigemptyset(&action.sa_mask);
 
-    action.sa_sigaction = handler_sigusr1;
+    if(!strcmp(MODE, "sigqueue")){
+        action.sa_sigaction = sigqueue_handler;
+    }else{
+        action.sa_sigaction = handler;
+    }
+    
     action.sa_flags = SA_SIGINFO;
-    sigaction(SIGUSR1, &action, NULL);
+    sigaction(SIG_1, &action, NULL);
 
     sigemptyset(&action.sa_mask);
-    sigaction(SIGUSR2, &action, NULL);
+    sigaction(SIG_2, &action, NULL);
 
     int sig_num = atoi(argv[1]);
     pid_t catcher_pid = atoi(argv[3]);
-    int res = 10;
-    if(!strcmp(argv[2], "kill")) res = send_kill(catcher_pid, sig_num);
-    else if(!strcmp(argv[2], "sigrt")) send_sigrt(catcher_pid, sig_num);
-    else if(!strcmp(argv[2], "sigqueue")) send_sigqueue(catcher_pid, sig_num);
+    int res = 1;
+
+    if(!strcmp(MODE, "kill")) res = send_kill(catcher_pid, sig_num);
+    else if(!strcmp(MODE, "sigrt")) res = send_sigrt(catcher_pid, sig_num);
+    else if(!strcmp(MODE, "sigqueue")) res = send_sigqueue(catcher_pid, sig_num);
     else{ 
         printf("wrong sending mode");
         return -1;
@@ -88,7 +126,6 @@ int main(int argc, char** argv){
             sleep(2);
         }
     }
-
     if(sigusr1_counter == sig_num) return 0;
     return -1;
 }
