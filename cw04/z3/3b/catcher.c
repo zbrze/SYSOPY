@@ -46,6 +46,7 @@ void send_back(pid_t sender_PID){
 }
 
 void signal_handler(int sig, siginfo_t* sig_info, void* ucontext){
+    printf("IVe received %d %s\n",  caught_signals, strsignal(sig));
     if(sending == 0){    
         if (sig == SIG_COUNT || sig == SIGUSR1){      
             caught_signals++;
@@ -97,6 +98,7 @@ int main(int argc, char** argv){
     if (!strcmp(sending_mode, "sigrt")){
         sigdelset(&mask, SIGRTMIN + 1);
         sigdelset(&mask, SIGRTMIN + 2);
+        sigdelset(&mask, SIGUSR1);
         SIG_COUNT = SIGRTMIN + 1;
         SIG_END = SIGRTMIN + 2;
     }
@@ -108,13 +110,19 @@ int main(int argc, char** argv){
     }
 
     sigprocmask(SIG_SETMASK, &mask, NULL);
-    
+
     struct sigaction action;
     sigemptyset(&action.sa_mask);
+
     sigaddset(&action.sa_mask, SIG_COUNT);
     sigaddset(&action.sa_mask, SIG_END);
     action.sa_flags = SA_SIGINFO;
     action.sa_sigaction = signal_handler;  
+
+    if (!strcmp(sending_mode, "sigrt")){
+         sigaddset(&action.sa_mask,SIGUSR1);
+         sigaction(SIGUSR1, &action, NULL);
+    }
     sigaction(SIG_COUNT, &action, NULL);
     sigaction(SIG_END, &action, NULL);
 

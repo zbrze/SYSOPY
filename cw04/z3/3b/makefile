@@ -5,8 +5,8 @@ all:
 	make sender
 	make catcher
 	@echo "\n\nKILL TEST\n"
-	./catcher sigqueue &
-	./sender 10 sigqueue `pidof catcher` 
+	./catcher sigrt &
+	./sender 10 sigrt `pidof catcher` 
 	
 
 sender:

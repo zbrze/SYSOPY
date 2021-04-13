@@ -10,27 +10,27 @@ int received_back = 0;
 char* glob_mode = NULL;
 int signal_count;
 int catching = 0;
-int SIG_COUNT;
-int SIG_END;
+int SIG_START;
+int SIG_STOP;
 
 void send_sig(pid_t catcher_PID){
     printf("SENDER %d SENDING SIG\n", received_signals);
    if (!strcmp(glob_mode, "sigqueue")){
         union sigval value;
-        sigqueue(catcher_PID, SIG_COUNT, value);
+        sigqueue(catcher_PID, SIG_START, value);
     }
     else{
-        kill(catcher_PID, SIG_COUNT);
+        kill(catcher_PID, SIG_START);
     }
 }
 
 void send_stop(pid_t catcher_PID){
    if (!strcmp(glob_mode, "sigqueue")){
         union sigval value;
-        sigqueue(catcher_PID, SIG_END, value);
+        sigqueue(catcher_PID, SIG_STOP, value);
     }
     else{
-        kill(catcher_PID, SIG_END);
+        kill(catcher_PID, SIG_STOP);
     }
 }
 void send_notice(pid_t catcher_PID){
@@ -47,7 +47,7 @@ void send_notice(pid_t catcher_PID){
 void signal_handler(int sig, siginfo_t* sig_info, void* ucontext){
     pid_t catcher_PID = sig_info -> si_pid;
    
-    if (sig == SIGUSR1 || sig == SIG_COUNT){
+    if (sig == SIGUSR1 || sig == SIG_START){
         if(received_signals <= signal_count){   
 
             received_signals++;
@@ -101,21 +101,21 @@ int main(int argc, char** argv){
         sigdelset(&mask, SIGRTMIN + 2);
         sigdelset(&mask, SIGRTMIN + 1);
         sigdelset(&mask, SIGUSR1);
-        SIG_COUNT = SIGRTMIN + 1;
-        SIG_END = SIGRTMIN + 2;
+        SIG_START = SIGRTMIN + 1;
+        SIG_STOP = SIGRTMIN + 2;
     }
     else{
         sigdelset(&mask, SIGUSR1);
         sigdelset(&mask, SIGUSR2);
-        SIG_COUNT = SIGUSR1;
-        SIG_END = SIGUSR2;
+        SIG_START = SIGUSR1;
+        SIG_STOP = SIGUSR2;
     }
 
      struct sigaction action;
     sigemptyset(&action.sa_mask);
 
-     sigaddset(&action.sa_mask, SIG_COUNT);
-    sigaddset(&action.sa_mask, SIG_END);
+     sigaddset(&action.sa_mask, SIG_START);
+    sigaddset(&action.sa_mask, SIG_STOP);
     action.sa_flags = SA_SIGINFO;
     action.sa_sigaction = signal_handler;  
 
@@ -124,8 +124,8 @@ int main(int argc, char** argv){
          sigaction(SIGUSR1, &action, NULL);
     }
 
-    sigaction(SIG_COUNT, &action, NULL);
-    sigaction(SIG_END, &action, NULL);
+    sigaction(SIG_START, &action, NULL);
+    sigaction(SIG_STOP, &action, NULL);
 
 
     send_sig(catcher_PID);
