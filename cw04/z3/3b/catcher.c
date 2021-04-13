@@ -8,11 +8,11 @@
 
 int caught_signals = 0;
 char* sending_mode = NULL;
-
+int sending = 0;
 int SIG_COUNT;
 int SIG_END;
 void send_notice(pid_t sender_PID){
-    printf("Sending notice\n");
+    //printf("Sending notice\n");
     if(!strcmp(sending_mode, "sigqueue")){
             union sigval value;
             sigqueue(sender_PID, SIGUSR1, value);
@@ -31,18 +31,28 @@ void send_stop(pid_t sender_PID){
         else{
             kill(sender_PID, SIG_END);
         }
-        
 }
 
 void signal_handler(int sig, siginfo_t* sig_info, void* ucontext){
-    //printf("Catcher: Otrzymalem sygnal - %d\n",caught_signals); // Dzieki temu mozemy sprawdzic, czy na zmiane dostaja sygnaly
-    if (sig == SIG_COUNT){      
-        caught_signals++;
-        send_notice( sig_info -> si_pid);
+    if(sending == 0){    
+        if (sig == SIG_COUNT){      
+            caught_signals++;
+            send_notice( sig_info -> si_pid);
+        }
+        else{          
+            send_stop(sig_info -> si_pid);
+            printf("Catcher: Received %d sig .\n\n", caught_signals);
+            sending = 1;
+            caught_signals++;
+            return;
+            //tu powinienem cos wyslac
+            //exit(0);
+        }
     }
-    else{           // Jesli to SIG_END to wychodzimy 
-        send_stop(sig_info -> si_pid);
-        printf("Catcher: Odebralem %d sygnalow %s.\nCatcher: Koncze dzialanie.\n\n", caught_signals, ( (strcmp(sending_mode, "sigrt") == 0) ? "SIGRTMIN+1" : "SIGUSR1"));
+    if(sending == 1){
+        printf("CATCHER: im in sending mode:\n");
+        fflush(stdout);
+        send_notice(sig_info -> si_pid);
         exit(0);
     }
 }

@@ -8,11 +8,12 @@
 int received_signals = 0;
 char* glob_mode = NULL;
 int signal_count;
-
+int catching = 0;
 int SIG_COUNT;
 int SIG_END;
 
 void send_sig(pid_t catcher_PID){
+    printf("SENDER %d SENDING SIG\n", received_signals);
    if (!strcmp(glob_mode, "sigqueue")){
         union sigval value;
         sigqueue(catcher_PID, SIG_COUNT, value);
@@ -22,41 +23,40 @@ void send_sig(pid_t catcher_PID){
     }
 }
 
-void send_SIG_END(pid_t catcher_PID){
-    if ( strcmp(glob_mode, "kill") == 0 || strcmp(glob_mode, "sigrt") == 0 ){
-        // kill lub sigrt
-        if ( kill(catcher_PID, SIG_END) < 0 ){
-            fprintf(stderr,"Sender: Nie wyslalem poprawnie sygnalu konczacego za pomoca kill!\n");
-            exit(2);
-        }
+void send_stop(pid_t catcher_PID){
+   if (!strcmp(glob_mode, "sigqueue")){
+        union sigval value;
+        sigqueue(catcher_PID, SIG_END, value);
     }
     else{
-        // sigqueue
-        union sigval value;
-        value.sival_int = 0;
-        if ( sigqueue(catcher_PID, SIG_END, value) < 0 ){
-            fprintf(stderr,"Sender: Nie wyslalem poprawnie sygnalu konczacego za pomoca sigqueue!\n");
-            exit(3);
-        }
+        kill(catcher_PID, SIG_END);
     }
 }
 
 void signal_handler(int sig, siginfo_t* sig_info, void* ucontext){
     pid_t catcher_PID = sig_info -> si_pid;
-    // printf("Sender: otrzymalem sygnal - %d\n", received_signals);        // Dzieki temu mozemy sprawdzic, czy sygnaly sa otrzymywane na zmiane
-    if (sig == SIGUSR1){
-        received_signals++;
-        if (received_signals < signal_count){       // Jesli nie dostlismy tyle co trzeba to wysylamy nowe
+   
+    if (sig == SIGUSR1 || sig == SIG_COUNT){
+        if(received_signals <= signal_count){   
+
+            received_signals++;
+            if (received_signals < signal_count) send_sig(catcher_PID);
+            else{     
+                send_stop(catcher_PID);
+            }   
+        }else{
+            printf("SENDER: Ive received one signal back");
+            fflush(stdout);
+        }
+    
+    }
+        else{
+            //waiting for back
+            printf("Sender: Dostalem %d sygnalow, powinno ich byc %d.\n\n",received_signals, signal_count);
+            received_signals ++;
             send_sig(catcher_PID);
         }
-        else{       // Jak nie to wysylamy SIG_END
-            send_SIG_END(catcher_PID);
-        }   
-    }
-    else{
-        printf("Sender: Dostalem %d sygnalow, powinno ich byc %d.\nSender: Koncze dzialanie.\n\n",received_signals, signal_count);
-        exit(0);
-    }
+    
 }
 int main(int argc, char** argv){
 
