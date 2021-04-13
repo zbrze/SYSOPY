@@ -14,7 +14,6 @@ int SIG_START;
 int SIG_STOP;
 
 void send_sig(pid_t catcher_PID){
-    printf("SENDER %d SENDING SIG\n", received_signals);
    if (!strcmp(glob_mode, "sigqueue")){
         union sigval value;
         sigqueue(catcher_PID, SIG_START, value);
@@ -34,7 +33,6 @@ void send_stop(pid_t catcher_PID){
     }
 }
 void send_notice(pid_t catcher_PID){
-    printf("SENDER: sending notice\n");
    if (!strcmp(glob_mode, "sigqueue")){
         union sigval value;
         sigqueue(catcher_PID, SIGUSR1, value);
@@ -56,7 +54,7 @@ void signal_handler(int sig, siginfo_t* sig_info, void* ucontext){
                 send_stop(catcher_PID);
             }   
         }else{
-            printf("SENDER: Ive received %d signal back\n", received_back);
+           // printf("SENDER: Ive received %d signal back\n", received_back);
             received_back++;
             fflush(stdout);
             send_notice(catcher_PID);
@@ -65,11 +63,11 @@ void signal_handler(int sig, siginfo_t* sig_info, void* ucontext){
     }
         else{
             //waiting for back
-             if(received_back == 0) printf("Sender: Dostalem %d sygnalow, powinno ich byc %d.\n\n",received_signals, signal_count);
+            if(received_back == 0) printf("*Sender Handler*: Ive received %d notices from catcher, Ive sent %d signals.\n\n",received_signals, signal_count);
             received_signals ++;
             if(received_back == 0) send_notice(catcher_PID);
             else{
-                    printf("Sender: Dostalem %d sygnalow z powrotem, powinno ich byc %d.\n\n",received_back, signal_count);
+                    printf("*Sender Handler*: Ive received %d signals back from catcher, there should be: %d.\n\n",received_back, signal_count);
                     send_stop(catcher_PID);
                     exit(0);
             }
@@ -127,7 +125,7 @@ int main(int argc, char** argv){
     sigaction(SIG_START, &action, NULL);
     sigaction(SIG_STOP, &action, NULL);
 
-
+    printf("Sender starts sending signals\n");
     send_sig(catcher_PID);
      
     while(1){

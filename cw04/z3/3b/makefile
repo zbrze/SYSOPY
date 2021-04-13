@@ -4,9 +4,15 @@ all:
 	make clean
 	make sender
 	make catcher
-	@echo "\n\nKILL TEST\n"
+		@echo "\n\n-----------------------KILL TEST-----------------------\n"
+	./catcher kill &
+	./sender 100 kill `pidof catcher` 
+	@echo "\n\n\n-----------------------SIGIRT TEST-----------------------\n"
 	./catcher sigrt &
-	./sender 10 sigrt `pidof catcher` 
+	./sender 100 sigrt `pidof catcher` 
+	@echo "\n\n\n-----------------------SIGQUEUE TEST-----------------------\n"
+	./catcher sigqueue &
+	./sender 100 sigqueue `pidof catcher` 
 	
 
 sender:
