@@ -6,6 +6,7 @@
 #include <ctype.h>
 
 int received_signals = 0;
+int received_back = 0;
 char* glob_mode = NULL;
 int signal_count;
 int catching = 0;
@@ -32,6 +33,16 @@ void send_stop(pid_t catcher_PID){
         kill(catcher_PID, SIG_END);
     }
 }
+void send_notice(pid_t catcher_PID){
+    printf("SENDER: sending notice\n");
+   if (!strcmp(glob_mode, "sigqueue")){
+        union sigval value;
+        sigqueue(catcher_PID, SIGUSR1, value);
+    }
+    else{
+        kill(catcher_PID, SIGUSR1);
+    }
+}
 
 void signal_handler(int sig, siginfo_t* sig_info, void* ucontext){
     pid_t catcher_PID = sig_info -> si_pid;
@@ -45,16 +56,23 @@ void signal_handler(int sig, siginfo_t* sig_info, void* ucontext){
                 send_stop(catcher_PID);
             }   
         }else{
-            printf("SENDER: Ive received one signal back");
+            printf("SENDER: Ive received %d signal back\n", received_back);
+            received_back++;
             fflush(stdout);
+            send_notice(catcher_PID);
         }
     
     }
         else{
             //waiting for back
-            printf("Sender: Dostalem %d sygnalow, powinno ich byc %d.\n\n",received_signals, signal_count);
+             if(received_back == 0) printf("Sender: Dostalem %d sygnalow, powinno ich byc %d.\n\n",received_signals, signal_count);
             received_signals ++;
-            send_sig(catcher_PID);
+            if(received_back == 0) send_notice(catcher_PID);
+            else{
+                    printf("Sender: Dostalem %d sygnalow z powrotem, powinno ich byc %d.\n\n",received_back, signal_count);
+                    send_stop(catcher_PID);
+                    exit(0);
+            }
         }
     
 }

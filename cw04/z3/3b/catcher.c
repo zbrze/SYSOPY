@@ -9,6 +9,7 @@
 int caught_signals = 0;
 char* sending_mode = NULL;
 int sending = 0;
+int sent_back = 0;
 int SIG_COUNT;
 int SIG_END;
 void send_notice(pid_t sender_PID){
@@ -33,9 +34,20 @@ void send_stop(pid_t sender_PID){
         }
 }
 
+void send_back(pid_t sender_PID){
+    if(!strcmp(sending_mode, "sigqueue")){
+            union sigval value;
+            sigqueue(sender_PID, SIG_COUNT, value);
+        }
+        else{
+            kill(sender_PID, SIG_COUNT);
+        }
+        sent_back++;
+}
+
 void signal_handler(int sig, siginfo_t* sig_info, void* ucontext){
     if(sending == 0){    
-        if (sig == SIG_COUNT){      
+        if (sig == SIG_COUNT || sig == SIGUSR1){      
             caught_signals++;
             send_notice( sig_info -> si_pid);
         }
@@ -43,17 +55,29 @@ void signal_handler(int sig, siginfo_t* sig_info, void* ucontext){
             send_stop(sig_info -> si_pid);
             printf("Catcher: Received %d sig .\n\n", caught_signals);
             sending = 1;
-            caught_signals++;
-            return;
+            
+            printf("CATCHER: im in sending mode:\n");
             //tu powinienem cos wyslac
             //exit(0);
         }
     }
-    if(sending == 1){
-        printf("CATCHER: im in sending mode:\n");
-        fflush(stdout);
-        send_notice(sig_info -> si_pid);
-        exit(0);
+    else{
+        if (sig == SIG_COUNT || sig == SIGUSR1){  
+            if(sent_back < caught_signals)    {
+
+                send_back(sig_info -> si_pid);
+                printf("CATCHER:ive sent %d signals back:\n", sent_back);
+                fflush(stdout);
+            }
+            else{
+                printf("CATCHER:Sending stop\n");
+                send_stop(sig_info -> si_pid);
+            }
+        }else{
+            printf("catcher ends working");
+            exit(0);
+        }
+        
     }
 }
 
