@@ -5,12 +5,12 @@
 #include <unistd.h>
 #include <string.h>
 
-int max_command = 10;
-int max_args_in_command = 10;
+int max_commands = 10;
+int max_command_len = 300;
 char** divide_command(char* a_command){
 
-    char** commands = malloc(256* sizeof(char*));
-    for(int i = 0; i < 256; i++) commands[i]= NULL;
+    char** commands = malloc(max_command_len* sizeof(char*));
+    for(int i = 0; i < max_command_len; i++) commands[i]= NULL;
     char* command;
     int index = 0;
     command = strtok_r(a_command, " \n\0", &a_command);
@@ -30,11 +30,11 @@ char** divide_command(char* a_command){
 char*** count_commands(char* line, size_t* len){
     if(len == 0) return NULL;
     int index = 0; 
-    char*** commands = malloc(sizeof(char **) * max_command);
+    char*** commands = malloc(sizeof(char **) * max_commands);
     char* command;
     command = strsep(&line, "|");
     while (command != NULL) {
-      char* tmp = malloc(sizeof(char) * max_command);
+      char* tmp = malloc(sizeof(char) * max_commands);
         strcpy(tmp,command);
         command = strsep(&line, "|");
         commands[index] = divide_command(tmp);
@@ -43,7 +43,6 @@ char*** count_commands(char* line, size_t* len){
   commands[index] = NULL;
 
   *len = index;
-  //printf("%s %s", commands[0][0], commands[0][1]);
   return commands;   
     
 }
@@ -51,11 +50,10 @@ char*** count_commands(char* line, size_t* len){
 
 void free_commands(char*** commands, size_t* len){
     for (int i=0; i < *len; i++){
-        for (int j=0; j < 256; j++) {
+        for (int j=0; j < max_command_len; j++) {
             if(commands[i][j] != NULL)free(commands[i][j]);    
         }
     }
-
     *len = 0;
 }
 int main(int argc, char** argv){
@@ -75,13 +73,13 @@ int main(int argc, char** argv){
     size_t line_len = 0;
     int fd[2], prev_fd[2];
     while((line_len = getline(&line, &len, command_file)) != -1){
+        printf("\ncommand %s\n", line);
         commands = count_commands(line, &line_len);
-        printf("LEN %d\n", line_len);
-        //execvp(commands[0][0], commands[0]);
+       
         for(int i = 0; i < line_len; i++){
-           if (i < line_len - 1)      // Otwieramy potok przed kazdym programem z wyjatkiem ostatniego
+           if (i != line_len - 1)    
                 if (pipe(fd) == -1){
-                    fprintf(stderr,"Wywolanie pipe() sie nie powiodlo!\n");
+                    perror("Pipe failure");
                     exit(3);
                 }
 
@@ -90,37 +88,32 @@ int main(int argc, char** argv){
             if (pid < 0){
                 perror("Cannot fork.");
             }
+
             else if (pid == 0){
-              if (i-1 >= 0){
-                    dup2(prev_fd[0], STDIN_FILENO); // Podmieniamy standardowe wejscie na poprzedni potok
-                    close(prev_fd[1]);      // Nie bedzie tutaj nic pisac do poprzedniego potoku, tylko czytac
+              if (i != 0){
+                    dup2(prev_fd[0], STDIN_FILENO);
+                    close(prev_fd[1]); 
                 }
 
-
-                if (i < line_len - 1){
-                    dup2(fd[1], STDOUT_FILENO);     // Podmieniamy standardowe wyjscie na nowy potok
-                    close(fd[0]);        // Nie bedzie stad nic czytac z nowego potoku, tylko pisac
-                }
-              printf("%d %s %s\n", line_len, commands[i][0],  commands[i][1]);
+                dup2(fd[1], STDOUT_FILENO);     
+                close(fd[0]);        
+                
               execvp(commands[i][0], commands[i]);
-              printf("\n\n\n");
+              fprintf(stderr,"execvp(%s) failed\n", commands[i][0]);
+              exit(0);
             } else{
-                if (i-1 >= 0){               // Zamykamy tylko te, ktore sa nieuzywane (zamykanie wczesniej spowoduje, ze potomek dostanie zamkniety potok)
-                    close(prev_fd[0]);      // Proces macierzysty nie uzywa potokow, wiec zamyka obie koncowki
-                    close(prev_fd[1]);      // Ale zamykamy tylko te, ktore sa juz nie uzywane    
+                if (i != 0){              
+                    close(prev_fd[1]);      
                 }
                 prev_fd[0] = fd[0];
                 prev_fd[1] = fd[1];
             }
 
         }
-         for (int i=0; i <= line_len; i++)   // Proces macierzysty czeka na wszystkich potomkow
-            wait(NULL);
-        
-            free_commands(commands, &line_len);
+        for (int i=0; i <= line_len; i++)  wait(NULL);
+        free_commands(commands, &line_len);
     }
     free(commands);
-    
     fclose(command_file);
     return 0;
     
