@@ -1,0 +1,4 @@
+cat /etc/passwd  | grep 10 | sort -r | grep 10
+ps -aux | grep root | wc -l
+ps -aux | grep root | wc -l
+ls -al ./ | sort -r
