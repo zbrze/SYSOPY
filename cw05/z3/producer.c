@@ -29,10 +29,9 @@ int main(int argc, char** argv){
     srand(time(NULL));
 
     char buff[N+1];
-    while(fgets(buff, N + 1, file) != NULL){ 
-        sleep((rand() % 2) + 1);
-        printf("PRODUCER: %s #%s#\n", buff, row_no);
-        fprintf(fd_file, "%s #%s#\n", buff, row_no);
+    while(fgets(buff, N+1, file) != NULL){ 
+        sleep(3);
+        fprintf(fd_file, "%s #%s# ", buff, row_no);
     }
     fclose(file);
     if(fclose(fd_file) == -1){

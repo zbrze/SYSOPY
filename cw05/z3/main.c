@@ -39,7 +39,7 @@ int main(int argc, char** argv){
     for(int i = 0 ; i < producers_no; i ++){
         if(fork() == 0){
             char buff[10];
-            sprintf(buff, "%d", i);
+            sprintf(buff, "%d", i + 1);
             char file_name[20];
             sprintf(file_name, "producer%dfile.txt", i);
             execl("./producer", "./producer", "pipe",buff , file_name, "10", NULL);
@@ -52,6 +52,7 @@ int main(int argc, char** argv){
         execlp("./consumer", "./consumer", "pipe", "consumer.txt" , "10", NULL);
         exit(3);
     }
+    wait(NULL);
     for(int i = 0; i < producers_no; i++) wait(NULL);
 
 

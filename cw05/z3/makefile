@@ -11,6 +11,7 @@ consumer: consumer.c
 	$(CC) $(FLAGS) consumer.c -o consumer
 
 compile: main.c producer.c consumer.c
+	make clean
 	make main
 	make producer
 	make consumer
@@ -22,3 +23,4 @@ clean:
 	rm -f consumer
 	rm -f pipe
 	rm -rf files
+	rm -f consumer.txt
