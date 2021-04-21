@@ -32,7 +32,7 @@ void client_stop(){
 
 void sigint_handler(int sig, siginfo_t *sig_inf, void *ucontext){
     printf("received sigint\n");
-    client_stop();
+    client_stop(); 
 
 }
 void client_start(){
