@@ -68,9 +68,9 @@ void client_start(){
     sigemptyset(&action.sa_mask);
     sigaction(SIGINT, &action, NULL);
 
-    printf("Succesfully started client:\n client queue: %d\n Im sending INIT message to server\n", client_queue_id, server_queue_id);
+    printf("Succesfully started client:\n client queue: %d\n Im sending INIT message to server\n", client_queue_id);
 
-    msg init_msg
+    //msg init_msg
 }
 int main(int argc, char**argv){
    /* msg msg_client;
@@ -96,5 +96,6 @@ int main(int argc, char**argv){
     }*/
 
     client_start();
+    client_stop();
 
 }
