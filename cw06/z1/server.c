@@ -26,13 +26,11 @@ void server_stop(){
         perror("Unable to delete msg queue");
     }
 
-    printf("Server closed");
-    exit(0);
+    printf("\nServer closed\n");
 }
 
 void sigint_handler(int sig, siginfo_t *sig_inf, void *ucontext){
     printf("received sigint");
-    exit(0);
 
 }
 
@@ -71,16 +69,17 @@ int get_client(int wanted_id){
     return -1;
 }
 
-void received_stop(int sender_id){
-    printf("Client %d announced stoping working", sender_id);
-    int idx_to_del = get_client(sender_id);
+void received_stop(msg *message){
+    printf("Client %d announced stoping working\n", message->client_id);
+    print_msg(*message);
+    int idx_to_del = get_client( message->client_id);
     if(idx_to_del == -1){
         perror("Client not found");
         exit(-1);
     }
     clients[idx_to_del].client_id = -1;
     clients[idx_to_del].queue_id = -1;
-    printf("Client %d succesfully stopped", sender_id);
+    printf("Client %d succesfully stopped\n\n", message->client_id);
 }
 
 void received_disconnect(int sender_id){
@@ -129,7 +128,7 @@ void received_list(int sender_id){
     char* buff = malloc(sizeof(char) * max_msg_len);
     for(int i = 0; i < max_clients; i++){
         if(clients[i].client_id != -1){
-            sprintf(buff, "client: %d, is %savaliable to chat\n", clients[i].client_id, (clients[i].interlocutor < 0) ? "" : "NOT ");
+            sprintf(buff, "%s\nclient: %d, is %savaliable to chat", buff, clients[i].client_id, (clients[i].interlocutor < 0) ? "" : "NOT ");
         }
     }
     strcpy(list_msg.content, buff);
@@ -137,7 +136,7 @@ void received_list(int sender_id){
         perror("Msgsnd failure: cannot send message with list to client");
         exit(-1);
     }
-    printf("Message with list sent successfully to %d", sender_id);
+    printf("Message with list sent successfully to %d\n", sender_id);
 }
 
 void received_connect(msg *message){
@@ -240,7 +239,7 @@ int main(){
         switch (received.type)
         {
         case STOP:
-            received_stop(received.client_id);
+            received_stop(&received);
             break;
         case DISCONNECT:
             received_disconnect(received.client_id);
