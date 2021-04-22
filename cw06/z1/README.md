@@ -18,21 +18,21 @@ Serwer ma umożliwiać łączenie klientów w pary - klienci przechodząc do try
 
 
 Rodzaje zleceń
-LIST:
-Zlecenie wypisania listy wszystkich aktywnych klientów wraz z informacja czy są dostępni do połączenia.
-CONNECT id_klienta:
-Zlecenie połączenia się z konkretnym klientem. Zleceniodawca wysyła do serwera id_klienta z listy aktywnych klientów. Serwer wysyła mu klucz kolejki klienta z którym chce się połączyć. Następnie serwer wysyła klucz kolejki zleceniodawcy do wybranego klienta. Obaj klienci przechodzą w tryb chatu - wysyłają sobie wiadomości bezpośrednio(bez udziału serwera). Serwer oznacza ich jako niedostępnych do połączenia dla innych klientów. (Należy umożliwić zerwanie połączenia - co skutkuje wysłaniem DISCONNECT do serwera).
-DISCONNECT:
-Zlecenie ustawienia klienta jako dostępnego do połączenia.
-STOP:
+LIST:\
+Zlecenie wypisania listy wszystkich aktywnych klientów wraz z informacja czy są dostępni do połączenia.\
+CONNECT id_klienta:\
+Zlecenie połączenia się z konkretnym klientem. Zleceniodawca wysyła do serwera id_klienta z listy aktywnych klientów. Serwer wysyła mu klucz kolejki klienta z którym chce się połączyć. Następnie serwer wysyła klucz kolejki zleceniodawcy do wybranego klienta. Obaj klienci przechodzą w tryb chatu - wysyłają sobie wiadomości bezpośrednio(bez udziału serwera). Serwer oznacza ich jako niedostępnych do połączenia dla innych klientów. (Należy umożliwić zerwanie połączenia - co skutkuje wysłaniem DISCONNECT do serwera).\
+DISCONNECT:\
+Zlecenie ustawienia klienta jako dostępnego do połączenia.\
+STOP:\
 Zgłoszenie zakończenia pracy klienta.  Klient wysyła ten komunikat, kiedy kończy pracę, aby serwer mógł usunąć z listy jego kolejkę. Następnie kończy pracę, usuwając swoją kolejkę. Komunikat ten wysyłany jest również, gdy po stronie klienta zostanie wysłany sygnał SIGINT.
-Zlecenia powinny być obsługiwane zgodnie z priorytetami, najwyższy priorytet ma STOP, potem DISCONNECT oraz LIST i reszta. Można tego dokonać poprzez sterowanie parametrem MTYPE w funkcji msgsnd.
+Zlecenia powinny być obsługiwane zgodnie z priorytetami, najwyższy priorytet ma STOP, potem DISCONNECT oraz LIST i reszta. Można tego dokonać poprzez sterowanie parametrem MTYPE w funkcji msgsnd.\
 Poszczególne rodzaje komunikatów należy identyfikować za pomocą typów komunikatów systemu V. Klucze dla kolejek mają być generowane na podstawie ścieżki $HOME. Małe liczby do wygenerowania kluczy oraz rodzaje komunikatów mają być zdefiniowane we wspólnym pliku nagłówkowym. Dla uproszczenia można założyć, że długość komunikatu jest ograniczona pewną stałą (jej definicja powinna znaleźć się w pliku nagłówkowym).
-Klient i serwer należy napisać w postaci osobnych programów (nie korzystamy z funkcji fork). Serwer musi być w stanie pracować z wieloma klientami naraz. Przed zakończeniem pracy każdy proces powinien usunąć kolejkę którą utworzył (patrz IPC_RMID oraz funkcja atexit). Dla uproszczenia można przyjąć, że serwer przechowuje informacje o klientach w statycznej tablicy (rozmiar tablicy ogranicza liczbę klientów, którzy mogą się zgłosić do serwera).
-Serwer może wysłać do klientów komunikaty:
-inicjujący pracę klienta w trybie chatu (kolejka klientów)
-wysyłający odpowiedzi do klientów (kolejki klientów)
-informujący klientów o zakończeniu pracy serwera - po wysłaniu takiego sygnału i odebraniu wiadomości STOP od wszystkich klientów serwer usuwa swoją kolejkę i kończy pracę. (kolejki klientów)
+Klient i serwer należy napisać w postaci osobnych programów (nie korzystamy z funkcji fork). Serwer musi być w stanie pracować z wieloma klientami naraz. Przed zakończeniem pracy każdy proces powinien usunąć kolejkę którą utworzył (patrz IPC_RMID oraz funkcja atexit). Dla uproszczenia można przyjąć, że serwer przechowuje informacje o klientach w statycznej tablicy (rozmiar tablicy ogranicza liczbę klientów, którzy mogą się zgłosić do serwera).\\
+Serwer może wysłać do klientów komunikaty:\
+inicjujący pracę klienta w trybie chatu (kolejka klientów)\
+wysyłający odpowiedzi do klientów (kolejki klientów)\
+informujący klientów o zakończeniu pracy serwera - po wysłaniu takiego sygnału i odebraniu wiadomości STOP od wszystkich klientów serwer usuwa swoją kolejkę i kończy pracę. (kolejki klientów)\
 Należy obsłużyć przerwanie działania serwera lub klienta za pomocą CTRL+C. Po stronie klienta obsługa tego sygnału jest równoważna z wysłaniem komunikatu STOP.
 
 ## Zadanie 2. Prosty chat - POSIX (50%)
