@@ -1,18 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-#include <sys/msg.h>
-#include <sys/ipc.h>
-#include <sys/types.h>
-#include <time.h>
-#include <ctype.h>
-#include <errno.h>
-#include <unistd.h>
 #include "common_header.h"
 int client_queue_id = -1;
 int server_queue_id = -1;
-int client_id;
+int client_id = -1;
 int inputAvailable();  
 void get_received_msg();
 void send_disconnect();
@@ -22,58 +11,63 @@ void client_stop(){
         //sending disconnect to my chatting mate
         send_disconnect();
     }
-    msg stop_msg;
-    stop_msg.type = STOP;
-    stop_msg.client_id = client_id;
-    stop_msg.failed = 0;
-    strcpy(stop_msg.content, "Hi, I want to go home");
+    if(client_id != -1){
+        printf("Sending STOP to server\n");
+        msg stop_msg;
+        stop_msg.type = STOP;
+        stop_msg.client_id = client_id;
+        stop_msg.failed = 0;
+        strcpy(stop_msg.content, "Hi, I want to go home");
 
-    if(msgsnd(server_queue_id, &stop_msg, max_msg_size,0) == -1){
-        perror("Sending STOP message failed\n");
+        if(msgsnd(server_queue_id, &stop_msg, max_msg_size,0) == -1){
+            exit_error("Sending STOP message failed\n"); 
+        }
     }
+    
     if(msgctl(client_queue_id,IPC_RMID, NULL) == -1){
         perror("Unable to delete msg queue\n");
     }
     printf("Client closed\n");
 }
 
-void sigint_handler(int sig, siginfo_t *sig_inf, void *ucontext){
-    printf("received sigint\n");
-    exit(0);
+int msgrcv_with_timeout(int client_queue_id, msg* server_reply, int timeout){
+    int waited = 0;
+    int ret_val;
+    while(waited < timeout){
+        ret_val = msgrcv(client_queue_id, server_reply, max_msg_size, INIT, IPC_NOWAIT);
+        if(ret_val != -1){
+            break;
+        }
+        waited += 500;
+        usleep(500);
+    }
+    return ret_val;
 }
 
 void client_start(){
     srand(time(NULL));
     key_t queue_key;
     if((queue_key= ftok(KEY_PATH, (rand() % 100 + 1)))== -1){
-        perror("Ftok failure");
-        exit(-1);
+        exit_error("Ftok failure");
     }
 
     if((client_queue_id = msgget(queue_key, IPC_CREAT | 0666)) == -1){
-        perror("Msgget failure");
-        exit(-1);
+        exit_error("Msgget failure");
     }
 
     key_t server_queue_key;
     if((server_queue_key = ftok(KEY_PATH, KEY_GEN)) == -1){
-        perror("Failed to get server's queue key");
-        exit(-1);
+        exit_error("Failed to get server's queue key");
     }
 
     if((server_queue_id = msgget(server_queue_key, 0)) == -1){
-        perror("Failed to get server's queue id");
-        exit(-1);
+        exit_error("Failed to get server's queue id");
     }
      if(atexit(client_stop) == -1){
-         perror("Failed to set exit");
-         exit(-1);
+         exit_error("Failed to set exit");
      }
-    struct sigaction action;
-    action.sa_sigaction = sigint_handler;
-    action.sa_flags = SA_SIGINFO;
-    sigemptyset(&action.sa_mask);
-    sigaction(SIGINT, &action, NULL);
+
+    set_sigint_handling(sigint_handler);
 
     printf("Succesfully started client:\n client queue: %d\n Im sending INIT message to server\n", client_queue_id);
 
@@ -81,26 +75,28 @@ void client_start(){
     init_msg.type = INIT;
     init_msg.failed = 0;
     sprintf(init_msg.content, "%d", client_queue_id);
-    if(msgsnd(server_queue_id, &init_msg, max_msg_size, 0) == -1){
-        perror("Failed to send init msg");
-        exit(0);
-    }
-    sleep(0.5);
-    msg server_reply;
-    if(msgrcv(client_queue_id, &server_reply, max_msg_size, INIT, 0) == -1){
-        perror("Failed to receive reply from server");
-        exit(-1);
+    print_msg(init_msg);
+    if((msgsnd(server_queue_id, &init_msg, max_msg_size, 0)) == -1){
+        exit_error("Failed to send init msg");
     }
 
+    msg server_reply;
+
+    if(msgrcv_with_timeout(client_queue_id, &server_reply, max_wait_for_init) == -1){
+        exit_error("Failed to receive reply from server");
+    }
+    
     print_msg(server_reply);
 
     client_id = atoi(server_reply.content);
 
-    if(client_id == -1){
+    if(server_reply.failed == 1){
         printf("Seems that there is no place for me.\nGonna stop working\n");
         exit(0);
     }
     printf("Succesfully connected to server\nMy new id: %d\n", client_id);
+
+    
 }
 
 void send_list_rqst(){
@@ -109,14 +105,12 @@ void send_list_rqst(){
     list_msg.client_id = client_id;
 
     if(msgsnd(server_queue_id, &list_msg, max_msg_size, 0) == -1){
-        perror("Sending list request failed");
-        exit(-1);
+        exit_error("Sending list request failed");
     }
 
     msg list_reply;
     if(msgrcv(client_queue_id, &list_reply, max_msg_size, LIST, 0) == -1){
-        perror("Receiving msg from server failure");
-        exit(-1);
+        exit_error("Receiving msg from server failure");
     }
     printf("Received list:\n%s\n", list_reply.content);
     printf("\nAvaliable commands are STOP, CONNECT other_client_id, LIST\n");
@@ -129,8 +123,7 @@ void send_disconnect(){
     disconnect_msg.failed = 0;
     strcpy(disconnect_msg.content, "Hi, I wanna stop chatting");
     if(msgsnd(server_queue_id, &disconnect_msg, max_msg_size, 0) == -1){
-        perror("Sending disconnect msg failure");
-        exit(-1);
+        exit_error("Sending disconnect msg failure");
     }
     chatting = 0;
     printf("You left the chat\nAvaliable commands are STOP, CONNECT other_client_id, LIST\n");
@@ -165,8 +158,7 @@ void chat_room(int interlocutor_queue, int interlocutor_id){
                     dm.client_id = client_id;
                     strcpy(dm.content, content);
                     if(msgsnd(interlocutor_queue, &dm, max_msg_size, 0) == -1){
-                        perror("Filed to send dm in chat");
-                        exit(-1);
+                        exit_error("Filed to send dm in chat");
                     }
                     fflush(stdout);
 
@@ -180,15 +172,27 @@ void chat_room(int interlocutor_queue, int interlocutor_id){
 }
 
 
-void send_connect_rqst(int interlocutor_id){
+void send_connect_rqst(char* a_interlocutor_id){
+
+    if(a_interlocutor_id == NULL || a_interlocutor_id[0] == '\t'){
+        printf("Usage: CONNECT USER_ID\n");
+        return;
+    }
+    int interlocutor_id = -1;
+    char* end;
+    interlocutor_id = strtol(a_interlocutor_id, &end, 10);
+    if(end == a_interlocutor_id){
+        printf("USER_ID needs to be a number\n");
+        return;
+    }
+    interlocutor_id = (int)interlocutor_id;
     printf("\nGonna send connect with %d request\n", interlocutor_id);
     msg connect_rqst;
     connect_rqst.type = CONNECT;
     connect_rqst.client_id = client_id;
     sprintf(connect_rqst.content, "%d", interlocutor_id);
     if(msgsnd(server_queue_id, &connect_rqst, max_msg_size, 0) == -1){
-        perror("Sending connect request failure");
-        exit(-1);
+        exit_error("Sending connect request failure");
     }
 
     msg reply;
@@ -257,7 +261,6 @@ int main(int argc, char**argv){
                 command_line[strlen(command_line)-1] = '\0';
                 char* command = strtok_r(command_line, " ", &command_line);
                 char* id = strtok_r(command_line, " ", &command_line);
-
                 switch (parse_str_to_type(command))
                 {
                 case STOP:
@@ -269,7 +272,7 @@ int main(int argc, char**argv){
                     break;
                 
                 case CONNECT:
-                    send_connect_rqst(atoi(id));
+                    send_connect_rqst(id);
                     break;
             
                 default:

@@ -40,4 +40,18 @@ void print_msg(msg m){
     printf("Content: %s\n", m.content);
     printf("---------------\n");
 }
-
+void set_sigint_handling(void (*handler)(int,  siginfo_t *, void *)){
+    struct sigaction action;
+    action.sa_sigaction = handler;
+    action.sa_flags = SA_SIGINFO;
+    sigemptyset(&action.sa_mask);
+    sigaction(SIGINT, &action, NULL);
+}
+void sigint_handler(int sig, siginfo_t *sig_inf, void *ucontext){
+    printf("\nreceived sigint, going to stop\n");
+    exit(0);
+}
+void exit_error(char *content){
+    perror(content);
+    exit(-1);
+}

@@ -3,11 +3,21 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+#include <sys/msg.h>
+#include <sys/ipc.h>
+#include <sys/types.h>
+#include <time.h>
+#include <ctype.h>
+#include <errno.h>
+#include <unistd.h>
 
 #define max_msg_len 1000
 #define max_clients 10
 #define KEY_PATH getenv("HOME")
 #define KEY_GEN 19
+#define max_wait_for_init 1000000
 
 typedef enum msg_type{
     STOP = 1,
@@ -34,5 +44,8 @@ typedef struct client{
 int parse_str_to_type(char *str);
 char* parse_type_to_str(int type);
 void print_msg(msg m);
+void set_sigint_handling(void (*func)(int,  siginfo_t *, void *));
+void exit_error(char *content);
+void sigint_handler(int sig, siginfo_t *sig_inf, void *ucontext);
 #define max_msg_size sizeof(msg)- sizeof(long)
 #endif
