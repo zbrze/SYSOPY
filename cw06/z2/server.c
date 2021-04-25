@@ -207,11 +207,11 @@ void received_init(char* msg){
 int main(){
 
     server_start();
-    char received[max_msg_size];
+    char received[max_msg_len];
     int client_id;
     while(1){
         unsigned int type;
-        if(mq_receive(server_queue_id, received, max_msg_size, &type) < 0){
+        if(mq_receive(server_queue_id, received, max_msg_len, &type) < 0){
             perror("Msgrcv failed");
             continue;
         }else{

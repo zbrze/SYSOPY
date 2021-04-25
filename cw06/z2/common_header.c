@@ -10,26 +10,6 @@ int parse_str_to_type(char *str){
     return __INT_MAX__;
 }
 
-char* parse_type_to_str(int type){
-    switch (type)
-    {
-    case STOP:
-        return "STOP";
-    case CONNECT:
-        return "CONNECT";
-    case DISCONNECT:
-        return "DISCONNECT";
-    case LIST:
-        return "LIST";
-    case INIT:
-        return "INIT";
-    case MSG:
-        return "MSG";
-    default:
-        return "UNKNOWN";
-    }
-}
-
 
 void set_sigint_handling(void (*handler)(int,  siginfo_t *, void *)){
     struct sigaction action;
@@ -38,14 +18,17 @@ void set_sigint_handling(void (*handler)(int,  siginfo_t *, void *)){
     sigemptyset(&action.sa_mask);
     sigaction(SIGINT, &action, NULL);
 }
+
 void sigint_handler(int sig, siginfo_t *sig_inf, void *ucontext){
     printf("\nreceived sigint, going to stop\n");
     exit(0);
 }
+
 void exit_error(char *content){
     perror(content);
     exit(-1);
 }
+
 mqd_t create_queue(int maxmsg, int no_block, char* name){
     mqd_t queue_id;
     struct mq_attr attr;

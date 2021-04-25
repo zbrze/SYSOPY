@@ -15,12 +15,12 @@
 #include <fcntl.h> 
 #include <sys/stat.h>  
 #include <sys/ipc.h>
-#include<errno.h>
 #define max_msg_len 1000
 #define max_clients 10
 #define SERVER_QUEUE "/queue_name_server"
 #define max_wait_for_init 1000000
 #define queue_name_len 8
+#define max_id_len 2
 
 typedef enum msg_type{
     STOP = 6,
@@ -40,13 +40,10 @@ typedef struct client{
 
 
 int parse_str_to_type(char *str);
-char* parse_type_to_str(int type);
 void set_sigint_handling(void (*func)(int,  siginfo_t *, void *));
 void exit_error(char *content);
 void sigint_handler(int sig, siginfo_t *sig_inf, void *ucontext);
 mqd_t create_queue(int maxmsg, int no_block, char* name);
 
 
-
-#define max_msg_size (max_msg_len + sizeof(int))
 #endif

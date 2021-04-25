@@ -11,14 +11,13 @@ void send_disconnect();
 void client_stop(){
     if(chatting){
         //sending disconnect to my chatting mate
-       // send_disconnect();
+       send_disconnect();
     }
 
     if(client_id != -1){
         printf("Sending STOP to server\n");
-        char stop_msg[3];
+        char stop_msg[max_id_len];
         sprintf(stop_msg, "%d", client_id);
-
         if(mq_send(server_queue_id, stop_msg, max_msg_len, STOP) == -1){
             exit_error("Sending STOP message failed\n"); 
         }
@@ -81,13 +80,16 @@ void client_start(){
 
     sscanf(server_reply, "%d", &client_id);
 
+    if(client_id == -1){
+        printf("Theres no place for me\n");
+        exit(0);
+    }
     printf("Succesfully connected to server\nMy new id: %d\n", client_id);
 
-    
 }
 
 void send_list_rqst(){
-    char list_rqst[3];
+    char list_rqst[max_id_len];
     sprintf(list_rqst, "%d", client_id);
 
     if(mq_send(server_queue_id, list_rqst, max_msg_len, LIST) == -1){
@@ -109,7 +111,7 @@ void send_list_rqst(){
 
 void send_disconnect(){
     if(!chatting) return;
-    char disconnect_rqst[2];
+    char disconnect_rqst[max_id_len];
     sprintf(disconnect_rqst,"%d", client_id);
     if(mq_send(server_queue_id, disconnect_rqst, max_msg_len, DISCONNECT) == -1){
         exit_error("Sending disconnect msg failure");
@@ -142,6 +144,9 @@ void chat_room(char* interlocutor_queue_name, int interlocutor_id){
                     send_disconnect();
                     break;
                 }
+                if(parse_str_to_type(command) == STOP){
+                    exit(0);
+                }
 
                 if(parse_str_to_type(command) == MSG){
                     printf("\nsending: %s  content %s\n", command, content);
@@ -151,9 +156,7 @@ void chat_room(char* interlocutor_queue_name, int interlocutor_id){
                     fflush(stdout);
 
                 }
-
-            
-          }
+            }
         }
     }
     if(mq_close(interlocutor_queue_id) == -1){
@@ -179,7 +182,7 @@ void send_connect_rqst(char* a_interlocutor_id){
     }
     interlocutor_id = (int)interlocutor_id;
     printf("\nGonna send connect with %d request\n", interlocutor_id);
-    char connect_rqst[10];
+    char connect_rqst[max_msg_len + queue_name_len + 2];
     sprintf(connect_rqst, "%d %d", client_id, interlocutor_id);
     if(mq_send(server_queue_id, connect_rqst, max_msg_len, CONNECT) == -1){
         exit_error("Sending connect request failure");
@@ -187,7 +190,7 @@ void send_connect_rqst(char* a_interlocutor_id){
 
     char reply[max_msg_len];
     unsigned int type;
-    if(mq_receive(client_queue_id, reply, max_msg_size, &type) == -1){
+    if(mq_receive(client_queue_id, reply, max_msg_len, &type) == -1){
         perror("Failed to receive reply from server");
         return;
     }
@@ -197,10 +200,9 @@ void send_connect_rqst(char* a_interlocutor_id){
         return;
     }
     chatting = 1;
-    char interlocutor_queue_name[10];
+    char interlocutor_queue_name[queue_name_len];
     sscanf(reply, "%s", interlocutor_queue_name);
     chat_room(interlocutor_queue_name, interlocutor_id);
-
 }
 
 void get_received_msg(){
@@ -232,8 +234,8 @@ void get_received_msg(){
         printf("*new chat msg: %s*\n", received_msg);
         fflush(stdout);
     }
-    
 }
+
 int inputAvailable(){
   struct timeval tv;
   fd_set fds;
@@ -275,7 +277,7 @@ int main(int argc, char**argv){
                 default:
                     printf("Unknown command\n");
                     break;
-                    }
+                }
             }
         }
         
