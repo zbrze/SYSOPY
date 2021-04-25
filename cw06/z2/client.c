@@ -106,19 +106,24 @@ void send_list_rqst(){
     printf("\nAvaliable commands are STOP, CONNECT other_client_id, LIST\n");
     return;
 }
-/*
+
 void send_disconnect(){
     if(!chatting) return;
     char disconnect_rqst[2];
-    sprintf(disconnect_msg.content,"%d", client_id);
-    if(msgsnd(server_queue_id, &disconnect_msg, max_msg_size, 0) == -1){
+    sprintf(disconnect_rqst,"%d", client_id);
+    if(mq_send(server_queue_id, disconnect_rqst, max_msg_len, DISCONNECT) == -1){
         exit_error("Sending disconnect msg failure");
     }
     chatting = 0;
-    printf("You left the chat\nAvaliable commands are STOP, CONNECT other_client_id, LIST\n");
+    printf("\nYou left the chat\n");
 }
 
-void chat_room(char* msg){
+void chat_room(char* interlocutor_queue_name, int interlocutor_id){
+
+    mqd_t interlocutor_queue_id;
+    if((interlocutor_queue_id = mq_open(interlocutor_queue_name, O_RDWR)) == -1){
+        exit_error("Unable to open interlocutor queue");
+    } 
     printf("---------Chatting with %d---------\n", interlocutor_id);
     printf("*To disconnect type DISCONNECT*\n");
     printf("*To send message in chat type MSG msg_content*\n\n");
@@ -133,7 +138,6 @@ void chat_room(char* msg){
               chat_msg[strlen(chat_msg)-1] = '\0';
                 char* command = strtok_r(chat_msg, " ", &chat_msg);
                 char* content = chat_msg;
-                printf("command: %s, parsed to: %d", command, parse_str_to_type(command));
                 if(parse_str_to_type(command) == DISCONNECT){
                     send_disconnect();
                     break;
@@ -141,12 +145,7 @@ void chat_room(char* msg){
 
                 if(parse_str_to_type(command) == MSG){
                     printf("\nsending: %s  content %s\n", command, content);
-                    msg dm;
-                    dm.type = MSG;
-                    dm.failed = 0;
-                    dm.client_id = client_id;
-                    strcpy(dm.content, content);
-                    if(msgsnd(interlocutor_queue, &dm, max_msg_size, 0) == -1){
+                    if(mq_send(interlocutor_queue_id, content, max_msg_len, MSG) == -1){
                         exit_error("Filed to send dm in chat");
                     }
                     fflush(stdout);
@@ -155,9 +154,13 @@ void chat_room(char* msg){
 
             
           }
-        fflush(stdout);
         }
     }
+    if(mq_close(interlocutor_queue_id) == -1){
+        exit_error("Unable to close interlocutors queue");
+    }
+    printf("\nSuccesfully ended chat\n\nAvaliable commands are STOP, CONNECT other_client_id, LIST\n");
+    fflush(stdout);
 }
 
 
@@ -176,27 +179,29 @@ void send_connect_rqst(char* a_interlocutor_id){
     }
     interlocutor_id = (int)interlocutor_id;
     printf("\nGonna send connect with %d request\n", interlocutor_id);
-    msg connect_rqst;
-    connect_rqst.type = CONNECT;
-    connect_rqst.client_id = client_id;
-    sprintf(connect_rqst.content, "%d", interlocutor_id);
-    if(msgsnd(server_queue_id, &connect_rqst, max_msg_size, 0) == -1){
+    char connect_rqst[10];
+    sprintf(connect_rqst, "%d %d", client_id, interlocutor_id);
+    if(mq_send(server_queue_id, connect_rqst, max_msg_len, CONNECT) == -1){
         exit_error("Sending connect request failure");
     }
 
-    msg reply;
-    if(msgrcv(client_queue_id, &reply, max_msg_size, CONNECT, 0) == -1){
+    char reply[max_msg_len];
+    unsigned int type;
+    if(mq_receive(client_queue_id, reply, max_msg_size, &type) == -1){
         perror("Failed to receive reply from server");
         return;
     }
-    if(reply.failed){
+    printf("\nReply from server: %s\n", reply);
+    if(!strcmp(reply, "-1") || type != CONNECT){
         printf("My friend cant chat with me :<\n");
         return;
     }
     chatting = 1;
-    chat_room(atoi(reply.content),interlocutor_id);
+    char interlocutor_queue_name[10];
+    sscanf(reply, "%s", interlocutor_queue_name);
+    chat_room(interlocutor_queue_name, interlocutor_id);
 
-}*/
+}
 
 void get_received_msg(){
     char received_msg[max_msg_len];
@@ -210,9 +215,12 @@ void get_received_msg(){
         exit(0);
     }
     if(type == CONNECT){
-        printf("\nSeems that someone wants to chat with me.\nLets go to the chat room\n\n");
         chatting = 1;
-        //chat_room(received_msg);
+        int interlocutor_id;
+        char interlocutor_queue_name[10];
+        sscanf(received_msg, "%d %s", &interlocutor_id, interlocutor_queue_name);
+        printf("\nSeems that %d (queue name: %s) wants to chat with me.\nLets go to the chat room\n\n", interlocutor_id, interlocutor_queue_name);
+        chat_room(interlocutor_queue_name, interlocutor_id);
         return;
     }
     if(type == DISCONNECT){
@@ -221,7 +229,7 @@ void get_received_msg(){
         chatting = 0;
     }
     if(type == MSG){
-        printf("chat msg: %s", received_msg);
+        printf("*new chat msg: %s*\n", received_msg);
         fflush(stdout);
     }
     
@@ -261,7 +269,7 @@ int main(int argc, char**argv){
                     break;
                 
                 case CONNECT:
-                    //send_connect_rqst(id);
+                    send_connect_rqst(id);
                     break;
             
                 default:

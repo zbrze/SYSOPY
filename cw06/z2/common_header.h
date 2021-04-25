@@ -33,6 +33,7 @@ typedef enum msg_type{
 
 typedef struct client{
     mqd_t queue_id;
+    char queue_name[10];
     int client_id;
     int interlocutor; //id of client's current interlocutor. If disconnected should be -2 if never connected -1
 }client;

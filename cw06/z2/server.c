@@ -26,6 +26,7 @@ unsigned int type;
     if(mq_unlink(SERVER_QUEUE) == -1){
         exit_error("Unable to delete msq queue");
     }
+
     printf("\nServer closed\n");
 }
 
@@ -44,6 +45,7 @@ void server_start(){
         clients[i].client_id = -1;
         clients[i].queue_id = -1;
         clients[i].interlocutor = -1;
+        strcpy(clients[i].queue_name, "");
     }
     printf("Server initialized\nMy queue id: %d\n", server_queue_id);
 }
@@ -63,8 +65,9 @@ void received_stop(int client_id){
 }
 
 void received_disconnect(int sender_id){
-    printf("Client %d announced disconnecting\n", sender_id);
-    int idx_to_discnct = sender_id;
+    int idx_to_discnct = clients[sender_id].client_id;
+    printf("Client %d announced disconnecting from chat with %d\n", idx_to_discnct, clients[idx_to_discnct].interlocutor);
+    
     if(idx_to_discnct == -1){
         perror("Client doesn't exist");
         return;
@@ -80,9 +83,7 @@ void received_disconnect(int sender_id){
         return;
     }
     int queue_interlocutor = clients[idx_interlocutor].queue_id;
-    char* msg_to_interlocutor = malloc(sizeof(char) * max_msg_len);
-    strcpy(msg_to_interlocutor, "Hi, I gotta go, bye!");
-
+    char msg_to_interlocutor[max_msg_len];
     if(mq_send(queue_interlocutor, msg_to_interlocutor, max_msg_len, DISCONNECT) == -1){
         exit_error("Msgsnd failure: cannot send message to interlocutor");
     }
@@ -101,7 +102,7 @@ void received_list(int sender_id){
     char* buff = malloc(sizeof(char) * max_msg_len);
     for(int i = 0; i < max_clients; i++){
         if(clients[i].client_id != -1){
-            sprintf(buff, "%s\nclient: %d, is %savaliable to chat %s\n", buff, clients[i].client_id, (clients[i].interlocutor < 0) ? "" : "NOT ", (clients[i].client_id == sender_id) ? "- it's you!" : "");
+            sprintf(buff, "%s\nclient: %d, queue: %s, is %savaliable to chat %s\n", buff, clients[i].client_id, clients[i].queue_name, (clients[i].interlocutor < 0) ? "" : "NOT ", (clients[i].client_id == sender_id) ? "- it's you!" : "");
         }
     }
     if(mq_send(queue_list, buff, max_msg_len, LIST) == -1){
@@ -148,14 +149,14 @@ void received_connect(char *msg){
     clients[idx_interlocutor].interlocutor = idx_sender;
     clients[idx_sender].interlocutor = idx_interlocutor;
     reply_to_sender = malloc(sizeof(char)* max_msg_len);
-    sprintf(reply_to_sender, "%d %d",clients[idx_interlocutor].client_id, interlocutor_queue);  
+    sprintf(reply_to_sender, "%s",clients[idx_interlocutor].queue_name);  
     
     if(mq_send(sender_queue, reply_to_sender, max_msg_len, CONNECT) == -1){
         exit_error("Msgsnd failed: cannot send connect reply to sender");
     }
 
     char* msg_to_interlocutor = malloc(sizeof(char)* max_msg_len);
-    sprintf(msg_to_interlocutor, "%d", sender_queue);
+    sprintf(msg_to_interlocutor, "%d %s",clients[idx_sender].client_id, clients[idx_sender].queue_name);
 
     if(mq_send(interlocutor_queue, msg_to_interlocutor, max_msg_len, CONNECT) == -1){
         exit_error("Msgsnd failed: cannot send msg to interlocutor");
@@ -196,6 +197,7 @@ void received_init(char* msg){
         clients[idx_new].client_id = idx_new;
         clients[idx_new].queue_id = new_queue_id;
         clients[idx_new].interlocutor = -1;
+        strcpy(clients[idx_new].queue_name, queue_name);
     }
     printf("Succesfully added client %d of queue: %d (name : %s)\n", clients[idx_new].client_id, clients[idx_new].queue_id, queue_name);
     
