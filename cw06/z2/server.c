@@ -3,26 +3,16 @@
 mqd_t server_queue_id;
 client clients[max_clients];
 
-void create_queue(){
-    struct mq_attr attr;
-    attr.mq_maxmsg = 10;
-    attr.mq_msgsize = max_msg_len;
-    attr.mq_curmsgs = 0;
-    attr.mq_flags = 0;
-    if((server_queue_id = mq_open(SERVER_QUEUE, O_CREAT, 0666, &attr)) == -1){
-        exit_error("Server queue opening failure");
-    }
-}
 
 void server_stop(){
 char reply[max_msg_len];
 unsigned int type;
     for(int i = 0; i < max_clients; i++){
         if(clients[i].client_id != -1){
-            if(mq_send(clients[i].queue_id, "Hi, server there. Im closing", max_msg_size, STOP) == -1){
+            if(mq_send(clients[i].queue_id, "Hi, server there. Im closing", max_msg_len, STOP) == -1){
                 exit_error("Sending stop server msg failure");
             }
-            if(mq_receive(server_queue_id, reply, max_msg_size, &type) == -1){
+            if(mq_receive(server_queue_id, reply, max_msg_len, &type) == -1){
                 perror("Receving reply from client failure");
             }
             printf("\nClient %d disconnected from server\n", clients[i].client_id);
@@ -44,7 +34,7 @@ unsigned int type;
 void server_start(){
     
 
-    create_queue();
+    server_queue_id =  create_queue(10, 0, SERVER_QUEUE);
 
     if(atexit(server_stop) != 0) exit_error("Atexit setting failure");
 
@@ -93,7 +83,7 @@ void received_disconnect(int sender_id){
     char* msg_to_interlocutor = malloc(sizeof(char) * max_msg_len);
     strcpy(msg_to_interlocutor, "Hi, I gotta go, bye!");
 
-    if(mq_send(queue_interlocutor, msg_to_interlocutor, max_msg_size, DISCONNECT) == -1){
+    if(mq_send(queue_interlocutor, msg_to_interlocutor, max_msg_len, DISCONNECT) == -1){
         exit_error("Msgsnd failure: cannot send message to interlocutor");
     }
     clients[idx_to_discnct].interlocutor = -2;
@@ -114,7 +104,7 @@ void received_list(int sender_id){
             sprintf(buff, "%s\nclient: %d, is %savaliable to chat %s\n", buff, clients[i].client_id, (clients[i].interlocutor < 0) ? "" : "NOT ", (clients[i].client_id == sender_id) ? "- it's you!" : "");
         }
     }
-    if(mq_send(queue_list, buff, max_msg_size, LIST) == -1){
+    if(mq_send(queue_list, buff, max_msg_len, LIST) == -1){
         exit_error("Msgsnd failure: cannot send message with list to client");
     }
     free(buff);
@@ -148,7 +138,7 @@ void received_connect(char *msg){
         reply_to_sender = malloc(2*sizeof(char));
         strcpy(reply_to_sender, "-1");
         //sending msg with failure reason in content
-        if(mq_send(sender_queue, reply_to_sender, max_msg_size, CONNECT) == -1){
+        if(mq_send(sender_queue, reply_to_sender, max_msg_len, CONNECT) == -1){
             exit_error("Sending refusal reply to connect rqst failure");
         }
         return;
@@ -158,16 +148,16 @@ void received_connect(char *msg){
     clients[idx_interlocutor].interlocutor = idx_sender;
     clients[idx_sender].interlocutor = idx_interlocutor;
     reply_to_sender = malloc(sizeof(char)* max_msg_len);
-    sprintf(reply_to_sender, "%d", interlocutor_queue);  
+    sprintf(reply_to_sender, "%d %d",clients[idx_interlocutor].client_id, interlocutor_queue);  
     
-    if(mq_send(sender_queue, reply_to_sender, max_msg_size, CONNECT) == -1){
+    if(mq_send(sender_queue, reply_to_sender, max_msg_len, CONNECT) == -1){
         exit_error("Msgsnd failed: cannot send connect reply to sender");
     }
 
     char* msg_to_interlocutor = malloc(sizeof(char)* max_msg_len);
     sprintf(msg_to_interlocutor, "%d", sender_queue);
 
-    if(mq_send(interlocutor_queue, msg_to_interlocutor, max_msg_size, CONNECT) == -1){
+    if(mq_send(interlocutor_queue, msg_to_interlocutor, max_msg_len, CONNECT) == -1){
         exit_error("Msgsnd failed: cannot send msg to interlocutor");
     }
     printf("Succesfully connected %d and %d\n", idx_sender, idx_interlocutor);
@@ -188,13 +178,17 @@ void received_init(char* msg){
         return;
     }
     mqd_t new_queue_id;
-    if((new_queue_id = mq_open(msg, O_RDONLY)) == -1){
+    char queue_name[10];
+    sscanf(msg, "%s", queue_name);
+
+    if((new_queue_id = mq_open(queue_name, O_RDWR)) == -1){
+        printf("%d", errno);
         exit_error("Queue opening failure");
     }
-    char *reply = malloc(max_msg_len*2);
+    char reply[2];
     sprintf(reply, "%d", idx_new);
 
-    if(mq_send(new_queue_id, reply, max_msg_size, 0) == -1){
+    if(mq_send(new_queue_id, reply, max_msg_len, 0) == -1){
         perror("Msgsnd failed: new client sent me wrong queue id\n");
         return; // dont wanna stop all server because of one weirdo
     }
@@ -203,7 +197,7 @@ void received_init(char* msg){
         clients[idx_new].queue_id = new_queue_id;
         clients[idx_new].interlocutor = -1;
     }
-    printf("Succesfully added client %d of queue: %d\n", idx_new, clients[idx_new].queue_id);
+    printf("Succesfully added client %d of queue: %d (name : %s)\n", clients[idx_new].client_id, clients[idx_new].queue_id, queue_name);
     
 
 }

@@ -46,3 +46,20 @@ void exit_error(char *content){
     perror(content);
     exit(-1);
 }
+mqd_t create_queue(int maxmsg, int no_block, char* name){
+    mqd_t queue_id;
+    struct mq_attr attr;
+    attr.mq_maxmsg = 10;
+    attr.mq_msgsize = max_msg_len;
+    if(no_block){
+        attr.mq_flags = O_NONBLOCK;
+    }else{
+        attr.mq_flags = 0;
+    }
+    attr.mq_curmsgs = 0;
+    if((queue_id = mq_open(name, O_RDONLY | O_CREAT | O_EXCL, 0666, &attr)) == -1){
+        
+        exit_error("Queue opening failure");
+    }
+    return queue_id;
+}
