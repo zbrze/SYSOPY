@@ -201,10 +201,10 @@ void send_connect_rqst(char* a_interlocutor_id){
 void get_received_msg(){
     char received_msg[max_msg_len];
     unsigned int type;
-    printf("WAITIN\n");
-    if(mq_receive(client_queue_id, received_msg, max_msg_size, &type) == -1){ 
+    struct timespec* timespec = (struct timespec*)malloc(sizeof(struct timespec));
+    if (mq_timedreceive(client_queue_id, received_msg, max_msg_len, &type, timespec) < 0){ 
         return;
-    } 
+    };
     if(type == STOP){
         printf("\n\nSeems that server ended working\nImma head out\n");
         exit(0);
@@ -244,7 +244,7 @@ int main(int argc, char**argv){
     size_t command_len = 0;
     while(1){
         get_received_msg();
-        printf("Chujoe");
+        if(inputAvailable()){
             if(getline(&command_line, &command_len, stdin) != -1){
                 command_line[strlen(command_line)-1] = '\0';
                 char* command = strtok_r(command_line, " ", &command_line);
@@ -269,7 +269,7 @@ int main(int argc, char**argv){
                     break;
                     }
             }
-
+        }
         
     }
 
