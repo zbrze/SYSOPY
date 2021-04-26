@@ -140,8 +140,10 @@ void received_connect(char *msg){
         strcpy(reply_to_sender, "-1");
         //sending msg with failure reason in content
         if(mq_send(sender_queue, reply_to_sender, max_msg_len, CONNECT) == -1){
+            free(reply_to_sender);
             exit_error("Sending refusal reply to connect rqst failure");
         }
+        free(reply_to_sender);
         return;
     }
 
@@ -152,15 +154,18 @@ void received_connect(char *msg){
     sprintf(reply_to_sender, "%s",clients[idx_interlocutor].queue_name);  
     
     if(mq_send(sender_queue, reply_to_sender, max_msg_len, CONNECT) == -1){
+        free(reply_to_sender);
         exit_error("Msgsnd failed: cannot send connect reply to sender");
     }
-
+    free(reply_to_sender);
     char* msg_to_interlocutor = malloc(sizeof(char)* max_msg_len);
     sprintf(msg_to_interlocutor, "%d %s",clients[idx_sender].client_id, clients[idx_sender].queue_name);
 
     if(mq_send(interlocutor_queue, msg_to_interlocutor, max_msg_len, CONNECT) == -1){
+        free(msg_to_interlocutor);
         exit_error("Msgsnd failed: cannot send msg to interlocutor");
     }
+    free(msg_to_interlocutor);
     printf("Succesfully connected %d and %d\n", idx_sender, idx_interlocutor);
 }
 
@@ -236,9 +241,10 @@ int main(){
                 printf("Unknow type of received message");
                 break;
             }
+        
         fflush(stdout);
         }
-
+        usleep(1000); // prevent processor hoarding
     }
     
     return 0;

@@ -158,6 +158,7 @@ void chat_room(char* interlocutor_queue_name, int interlocutor_id){
                 }
             }
         }
+        usleep(1000); // prevent processor hoarding
     }
     if(mq_close(interlocutor_queue_id) == -1){
         exit_error("Unable to close interlocutors queue");
@@ -210,8 +211,10 @@ void get_received_msg(){
     unsigned int type;
     struct timespec* timespec = (struct timespec*)malloc(sizeof(struct timespec));
     if (mq_timedreceive(client_queue_id, received_msg, max_msg_len, &type, timespec) < 0){ 
+        free(timespec);
         return;
     };
+    free(timespec);
     if(type == STOP){
         printf("\n\nSeems that server ended working\nImma head out\n");
         exit(0);
@@ -280,7 +283,7 @@ int main(int argc, char**argv){
                 }
             }
         }
-        
+        usleep(1000); // prevent processor hoarding
     }
 
 return 0;
