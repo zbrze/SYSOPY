@@ -1,0 +1,37 @@
+Po analizie uzyskanych pomiarow czasow dla roznych poziomow optymalizacji mozna wysnuć wnioski:
+- dla linkowania statycznego:
+    *dla operacji na malej ilości danych:
+        + czas systemowy jest zasadniczo rowny 0 dla wszystkich poziomow optymalizacji
+        + najgorszy czas rzeczywisty i uzytkownika są dla optymalizacji -O0
+    *dla operacji na duzej ilości danych:
+        + czas systemowy jest najlepszy dla poziomu -Os, a najgorszy dla -O0
+        + czas rzeczywisty i uzytkownika są najlepsze dla optymalizacji -Os
+    *dla operacji na bardzo duzej ilości danych:
+        + czasy systemowe dla wszystkich poziomow optymalizacji są podobne
+        + czasy uzytkownika i rzeczywisty jest najlepszy dla optymalizacji -O0
+
+- dla linkowania wspoldzielonego:
+    *dla operacji na malej ilości danych:
+        + czas systemowy jest najkrotszy dla optymalizacji -Os
+        + czasy uzytkownika i rzeczywisty są do siebie bardzo zblizone - nie mozna wnioskować ktory poziom optymalizacji sprawdza się pod tym względem najlepiej
+    *dla operacji na duzej ilości danych:
+        + czasy systemowy i rzeczywisty są najkrotsze dla -Os
+        + poziomy -O0 i -O1 mają zblizoby performance z lekką przewagą dla -O1
+    *dla operacji na bardzo duzej ilości danych:
+        + czas systemowy jest najlepszy dla optymalizacji -Os
+        + czas rzeczywisty i uzytkownika są najlepsze dla poziomu -O1
+        + najgorszy pod kazdym względem performance ma poziom -O0
+
+- dla linkowania dynamicznego:
+    *dla operacji na malej ilości danych:
+        + czasy uzytkownika i rzeczywisty są wyraźnie najkrotsze dla -O1
+        + czas systemowy jest zblizony dla wszystkich poziomow
+    *dla operacji na duzej ilości danych:
+        + czas systemowy i rzeczywisty jest najgorszy dla -O0
+        + najlepsze czasy rzeczywisty i uzytkownika występują dla poziomu -)s
+    *dla operacji na bardzo duzej ilości danych:
+        + czasy uzytkownika i rzeczywisty są wyraźnie najgorsze dla poziomu -O0
+        + czas  uzytkownika jest najlepszy dla poziomu -Os
+        + czas systemowy jest najlepszy dla poziomu -O1
+      
+-mozna zauwazyć ze dla roznych sposobow linkowania i roznych zbiorow danych poziomy optymalizacji roznią się między sobą performancem, ale zasadniczo najgorszy performance ma poziom -O0

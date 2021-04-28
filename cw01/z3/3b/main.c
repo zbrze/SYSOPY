@@ -4,7 +4,7 @@
 #include <time.h>
 #include <sys/times.h>
 #include <unistd.h>
-#include <dlfcn.h>
+#include<string.h>
 
 clock_t startTime, endTime;
 struct tms startTms, endTms;
@@ -29,27 +29,15 @@ void timerStop(){
 
 
 int main(int argc, char *argv[]){
-    void *handle = dlopen("./lib.so", RTLD_LAZY);
-    if (handle == NULL){
-        printf("nie znaleziono lib.so");
-        exit(EXIT_FAILURE);
-    } 
-
-    struct BlockArr* (*createBlockArr)() = dlsym(handle, "createBlockArr");
-    int (*deleteBlockArr)() = dlsym(handle, "deleteBlockArr");
-    int (*deleteLine)() = dlsym(handle, "deleteLine");
-    int (*deleteBlock) () = dlsym(handle, "deleteBlock");
-    int (*mergeFilesSeq)()  = dlsym(handle, "mergeFilesSeq");
-    double (*countTime) () = dlsym(handle, "countTime");
-
     if(argc < 3){
         printf("podano za malo danych");
         return 0;
     }
-
     char *operation;
     struct BlockArr *arr = NULL;
+
     FILE *output = fopen("results3a.txt", "a");
+    
     for(int i = 1; i < argc; i++){
         timerStart();
         char *command = argv[i];
@@ -114,7 +102,7 @@ int main(int argc, char *argv[]){
         
         else if(strcmp(command,"deleteBlock") == 0){
              if(argc <= i + 1 || !isNum(argv[i+1])){
-                printf("brak lub bledny indeks bloku");
+                printf("brak lub bledny indeks bloku\n");
                 break;
             }
             i++;
@@ -125,17 +113,17 @@ int main(int argc, char *argv[]){
         }
         else if(strcmp(command,"deleteLine") == 0){
              if(argc <= i + 2 || !isNum(argv[i+1]) || !isNum(argv[i+2])){
-                printf("brak lub bledny indeks bloku/ wiersza");
+                printf("brak lub bledny indeks bloku/ wiersza\n");
                 break;
             }
             i++;
             if(deleteLine(arr, atoi(argv[i]), atoi(argv[i+1]))){
-                printf("poprawnie usunieto wiersz");
+                printf("poprawnie usunieto wiersz\n");
             }
             operation = "delete line";
             i++;
         }else{
-            printf("podano niepoprawna operacje");
+            printf("podano niepoprawna operacje\n");
             break;
         }
         timerStop();
@@ -151,6 +139,4 @@ int main(int argc, char *argv[]){
             printf("Czas systemowy: %f\n", countTime(startTms.tms_stime, endTms.tms_stime));
         }
     }
-    deleteBlockArr(arr);
-    dlclose(handle);
 }
