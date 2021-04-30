@@ -1,0 +1,650 @@
+
+Operacja: create table
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: merge files
+Czas rzeczywisty: 0.070000
+Czas uzytkownika: 0.060000
+Czas systemowy: 0.000000
+
+Operacja: parse tmp to blocks
+Czas rzeczywisty: 0.070000
+Czas uzytkownika: 0.060000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: merge files
+Czas rzeczywisty: 0.030000
+Czas uzytkownika: 0.020000
+Czas systemowy: 0.020000
+
+Operacja: parse tmp to blocks
+Czas rzeczywisty: 0.030000
+Czas uzytkownika: 0.020000
+Czas systemowy: 0.020000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: merge files
+Czas rzeczywisty: 0.290000
+Czas uzytkownika: 0.270000
+Czas systemowy: 0.010000
+
+Operacja: parse tmp to blocks
+Czas rzeczywisty: 0.290000
+Czas uzytkownika: 0.270000
+Czas systemowy: 0.010000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: merge files
+Czas rzeczywisty: 1.700000
+Czas uzytkownika: 1.640000
+Czas systemowy: 0.050000
+
+Operacja: parse tmp to blocks
+Czas rzeczywisty: 1.700000
+Czas uzytkownika: 1.640000
+Czas systemowy: 0.050000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: create table
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: merge files
+Czas rzeczywisty: 0.060000
+Czas uzytkownika: 0.050000
+Czas systemowy: 0.000000
+
+Operacja: parse tmp to blocks
+Czas rzeczywisty: 0.060000
+Czas uzytkownika: 0.050000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: merge files
+Czas rzeczywisty: 0.040000
+Czas uzytkownika: 0.040000
+Czas systemowy: 0.000000
+
+Operacja: parse tmp to blocks
+Czas rzeczywisty: 0.040000
+Czas uzytkownika: 0.040000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: merge files
+Czas rzeczywisty: 0.270000
+Czas uzytkownika: 0.260000
+Czas systemowy: 0.010000
+
+Operacja: parse tmp to blocks
+Czas rzeczywisty: 0.270000
+Czas uzytkownika: 0.260000
+Czas systemowy: 0.010000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: merge files
+Czas rzeczywisty: 1.600000
+Czas uzytkownika: 1.510000
+Czas systemowy: 0.090000
+
+Operacja: parse tmp to blocks
+Czas rzeczywisty: 1.600000
+Czas uzytkownika: 1.510000
+Czas systemowy: 0.090000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: create table
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: merge files
+Czas rzeczywisty: 0.060000
+Czas uzytkownika: 0.050000
+Czas systemowy: 0.000000
+
+Operacja: parse tmp to blocks
+Czas rzeczywisty: 0.060000
+Czas uzytkownika: 0.050000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: merge files
+Czas rzeczywisty: 0.020000
+Czas uzytkownika: 0.030000
+Czas systemowy: 0.000000
+
+Operacja: parse tmp to blocks
+Czas rzeczywisty: 0.020000
+Czas uzytkownika: 0.030000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: merge files
+Czas rzeczywisty: 0.290000
+Czas uzytkownika: 0.260000
+Czas systemowy: 0.020000
+
+Operacja: parse tmp to blocks
+Czas rzeczywisty: 0.290000
+Czas uzytkownika: 0.260000
+Czas systemowy: 0.020000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete block
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: merge files
+Czas rzeczywisty: 1.620000
+Czas uzytkownika: 1.590000
+Czas systemowy: 0.050000
+
+Operacja: parse tmp to blocks
+Czas rzeczywisty: 1.620000
+Czas uzytkownika: 1.590000
+Czas systemowy: 0.050000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
+
+Operacja: delete line
+Czas rzeczywisty: 0.000000
+Czas uzytkownika: 0.000000
+Czas systemowy: 0.000000
