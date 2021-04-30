@@ -1,0 +1,12 @@
+createBlockArr 60 
+mergeFiles txt_files/big1.txt:txt_files/big2.txt txt_files/med1.txt:txt_files/med2.txt txt_files/lil1.txt:txt_files/lil2.txt txt_files/big1.txt:txt_files/med1.txt txt_files/lil1.txt:txt_files/med2.txt
+deleteLine 1 10 deleteLine 1 15 
+deleteBlock 0 deleteBlock 2 deleteBlock 4
+mergeFiles txt_files/big1.txt:txt_files/lil1.txt txt_files/med1.txt:txt_files/big2.txt
+deleteLine 0 1222 deleteLine 1 6 deleteLine 1 3 deleteLine 2 20 deleteLine 1 10 deleteLine 1 11 deleteLine 0 0
+deleteBlock 0 deleteBlock 1 
+mergeFiles txt_files/big2.txt:txt_files/lil1.txt txt_files/med1.txt:txt_files/big3.txt
+deleteLine 0 1 deleteLine 1 6 deleteLine 1 3 deleteLine 2 20 deleteLine 1 10 deleteLine 1 11 deleteLine 0 0
+deleteBlock 1 deleteBlock 0 deleteBlock 3 deleteBlock 5 
+mergeFiles txt_files/big4.txt:txt_files/lil1.txt txt_files/med2.txt:txt_files/big4.txt  txt_files/med2.txt:txt_files/big1.txt txt_files/med1.txt:txt_files/big4.txt txt_files/lil1.txt:txt_files/big4.txt txt_files/med1.txt:txt_files/lil1.txt 
+deleteLine 0 1 deleteLine 1 1222 deleteLine 1 4333 deleteLine 2 2650 deleteLine 0 1770 deleteLine 1 11 deleteLine 0 0

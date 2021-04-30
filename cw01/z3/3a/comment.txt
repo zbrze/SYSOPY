@@ -1,0 +1,5 @@
+Po analizie uzyskanych pomiarow czasow dla roznych typow linkowania mozna wysnuć wnioski:
+- operacje mergowania i parsowania wykonują się widocznie wolniej (w rozumieniu czasu rzeczywistego i uzytkownika) dla linkowania dynamicznego
+- operacje usuwania blokow i linijek są wykonywane tak szybko, ze zegar w zadnym typie linkowania nie jest w stanie ich wychwycić
+- operacje mergowania i parsowania tmp doblokow wykonują się w bardzo zblizonym czasie
+- pliki wykonywalne z uzyciem biblioteki statycznej są większe niz pliki wykonywalne pozostalych typow linkowania
