@@ -1,0 +1,337 @@
+============================================================N U M B E R S============================================================
+
+
+_______________________________ IMG SIZE: 256  256 _______________________________
+
+---------------mode: numbers --- threads: 1 --- img size: 256 x 256---------------------
+Thread no: 139659034052352, run time: 00:000:311
+FULL TIME: 00:000:424
+
+
+---------------mode: numbers --- threads: 2 --- img size: 256 x 256---------------------
+Thread no: 140513249089280, run time: 00:000:560
+Thread no: 140513240696576, run time: 00:000:584
+FULL TIME: 00:000:940
+
+
+---------------mode: numbers --- threads: 4 --- img size: 256 x 256---------------------
+Thread no: 140493876881152, run time: 00:000:405
+Thread no: 140493868488448, run time: 00:000:525
+Thread no: 140493860095744, run time: 00:000:510
+Thread no: 140493851703040, run time: 00:000:498
+FULL TIME: 00:001:017
+
+
+---------------mode: numbers --- threads: 8 --- img size: 256 x 256---------------------
+Thread no: 140658420061952, run time: 00:000:425
+Thread no: 140658411669248, run time: 00:000:363
+Thread no: 140658403276544, run time: 00:000:303
+Thread no: 140658394883840, run time: 00:000:308
+Thread no: 140658386491136, run time: 00:000:344
+Thread no: 140658378098432, run time: 00:000:349
+Thread no: 140658369705728, run time: 00:000:312
+Thread no: 140658361313024, run time: 00:000:279
+FULL TIME: 00:000:792
+
+
+---------------mode: numbers --- threads: 16 --- img size: 256 x 256---------------------
+Thread no: 139746064455424, run time: 00:000:395
+Thread no: 139746056062720, run time: 00:000:389
+Thread no: 139746047670016, run time: 00:000:374
+Thread no: 139746039277312, run time: 00:000:345
+Thread no: 139746030884608, run time: 00:000:624
+Thread no: 139746022491904, run time: 00:000:414
+Thread no: 139746014099200, run time: 00:000:328
+Thread no: 139746005706496, run time: 00:000:345
+Thread no: 139745997313792, run time: 00:000:355
+Thread no: 139745988921088, run time: 00:000:453
+Thread no: 139745980528384, run time: 00:000:346
+Thread no: 139745972135680, run time: 00:000:757
+Thread no: 139745963742976, run time: 00:000:369
+Thread no: 139745955350272, run time: 00:000:304
+Thread no: 139745946957568, run time: 00:000:266
+Thread no: 139745938564864, run time: 00:000:163
+FULL TIME: 00:001:719
+
+
+
+
+
+_______________________________ IMG SIZE: 640 480 _______________________________
+
+---------------mode: numbers --- threads: 1 --- img size: 640 x 480---------------------
+Thread no: 140689070610176, run time: 00:001:060
+FULL TIME: 00:001:156
+
+
+---------------mode: numbers --- threads: 2 --- img size: 640 x 480---------------------
+Thread no: 140115820316416, run time: 00:001:151
+Thread no: 140115811923712, run time: 00:001:928
+FULL TIME: 00:002:045
+
+
+---------------mode: numbers --- threads: 4 --- img size: 640 x 480---------------------
+Thread no: 139892953114368, run time: 00:001:324
+Thread no: 139892944721664, run time: 00:001:338
+Thread no: 139892936328960, run time: 00:002:104
+Thread no: 139892927936256, run time: 00:001:241
+FULL TIME: 00:002:275
+
+
+---------------mode: numbers --- threads: 8 --- img size: 640 x 480---------------------
+Thread no: 139755227268864, run time: 00:001:683
+Thread no: 139755218876160, run time: 00:002:003
+Thread no: 139755210483456, run time: 00:002:966
+Thread no: 139755202090752, run time: 00:002:701
+Thread no: 139755193698048, run time: 00:001:878
+Thread no: 139755185305344, run time: 00:001:777
+Thread no: 139755176912640, run time: 00:001:424
+Thread no: 139755168519936, run time: 00:001:617
+FULL TIME: 00:003:773
+
+
+---------------mode: numbers --- threads: 16 --- img size: 640 x 480---------------------
+Thread no: 140402149197568, run time: 00:001:807
+Thread no: 140402140804864, run time: 00:001:727
+Thread no: 140402132412160, run time: 00:001:692
+Thread no: 140402124019456, run time: 00:002:126
+Thread no: 140402115626752, run time: 00:001:022
+Thread no: 140402107234048, run time: 00:001:620
+Thread no: 140402098841344, run time: 00:001:530
+Thread no: 140402090448640, run time: 00:001:579
+Thread no: 140402082055936, run time: 00:001:784
+Thread no: 140402073663232, run time: 00:001:768
+Thread no: 140402065270528, run time: 00:001:877
+Thread no: 140402056877824, run time: 00:001:351
+Thread no: 140402048485120, run time: 00:001:476
+Thread no: 140402040092416, run time: 00:001:286
+Thread no: 140402031699712, run time: 00:000:714
+Thread no: 140402023307008, run time: 00:001:490
+FULL TIME: 00:005:367
+
+
+
+
+
+_______________________________ IMG SIZE: 800 800 _______________________________
+
+---------------mode: numbers --- threads: 1 --- img size: 800 x 800---------------------
+Thread no: 140411532920576, run time: 00:004:264
+FULL TIME: 00:004:505
+
+
+---------------mode: numbers --- threads: 2 --- img size: 800 x 800---------------------
+Thread no: 140578030012160, run time: 00:004:518
+Thread no: 140578021619456, run time: 00:005:768
+FULL TIME: 00:006:037
+
+
+---------------mode: numbers --- threads: 4 --- img size: 800 x 800---------------------
+Thread no: 140025538713344, run time: 00:004:103
+Thread no: 140025530320640, run time: 00:003:185
+Thread no: 140025521927936, run time: 00:003:936
+Thread no: 140025513535232, run time: 00:003:755
+FULL TIME: 00:004:228
+
+
+---------------mode: numbers --- threads: 8 --- img size: 800 x 800---------------------
+Thread no: 139787227571968, run time: 00:004:799
+Thread no: 139787219179264, run time: 00:004:254
+Thread no: 139787210786560, run time: 00:004:216
+Thread no: 139787202393856, run time: 00:004:261
+Thread no: 139787194001152, run time: 00:004:189
+Thread no: 139787185608448, run time: 00:004:304
+Thread no: 139787177215744, run time: 00:004:377
+Thread no: 139787168823040, run time: 00:003:819
+FULL TIME: 00:008:265
+
+
+---------------mode: numbers --- threads: 16 --- img size: 800 x 800---------------------
+Thread no: 139728113202944, run time: 00:004:750
+Thread no: 139728104810240, run time: 00:004:154
+Thread no: 139728096417536, run time: 00:004:137
+Thread no: 139728088024832, run time: 00:004:306
+Thread no: 139728079632128, run time: 00:003:786
+Thread no: 139728071239424, run time: 00:004:400
+Thread no: 139728062846720, run time: 00:004:253
+Thread no: 139728054454016, run time: 00:004:091
+Thread no: 139728046061312, run time: 00:006:192
+Thread no: 139728037668608, run time: 00:007:245
+Thread no: 139728029275904, run time: 00:003:145
+Thread no: 139728020883200, run time: 00:004:352
+Thread no: 139728012490496, run time: 00:004:337
+Thread no: 139728004097792, run time: 00:004:334
+Thread no: 139727995705088, run time: 00:004:436
+Thread no: 139727987312384, run time: 00:004:364
+FULL TIME: 00:011:546
+
+
+
+
+==========================================================B L O C K S==========================================================
+
+_______________________________ IMG SIZE: 256  256 _______________________________
+
+---------------mode: numbers --- threads: 1 --- img size: 256 x 256---------------------
+Thread no: 139888242853632, run time: 00:000:251
+FULL TIME: 00:000:352
+
+
+---------------mode: numbers --- threads: 2 --- img size: 256 x 256---------------------
+Thread no: 139678621759232, run time: 00:000:576
+Thread no: 139678613366528, run time: 00:001:142
+FULL TIME: 00:001:881
+
+
+---------------mode: numbers --- threads: 4 --- img size: 256 x 256---------------------
+Thread no: 140538860906240, run time: 00:000:292
+Thread no: 140538852513536, run time: 00:000:251
+Thread no: 140538844120832, run time: 00:000:230
+Thread no: 140538835728128, run time: 00:000:317
+FULL TIME: 00:000:684
+
+
+---------------mode: numbers --- threads: 8 --- img size: 256 x 256---------------------
+Thread no: 140032975877888, run time: 00:000:813
+Thread no: 140032967485184, run time: 00:000:358
+Thread no: 140032959092480, run time: 00:000:440
+Thread no: 140032950699776, run time: 00:000:357
+Thread no: 140032942307072, run time: 00:000:352
+Thread no: 140032933914368, run time: 00:000:320
+Thread no: 140032925521664, run time: 00:000:301
+Thread no: 140032917128960, run time: 00:000:287
+FULL TIME: 00:001:065
+
+
+---------------mode: numbers --- threads: 16 --- img size: 256 x 256---------------------
+Thread no: 139723674859264, run time: 00:000:371
+Thread no: 139723666466560, run time: 00:000:328
+Thread no: 139723658073856, run time: 00:000:332
+Thread no: 139723649681152, run time: 00:000:415
+Thread no: 139723641288448, run time: 00:000:293
+Thread no: 139723632895744, run time: 00:000:324
+Thread no: 139723624503040, run time: 00:000:358
+Thread no: 139723616110336, run time: 00:000:323
+Thread no: 139723607717632, run time: 00:000:328
+Thread no: 139723599324928, run time: 00:000:211
+Thread no: 139723590932224, run time: 00:000:368
+Thread no: 139723582539520, run time: 00:000:344
+Thread no: 139723574146816, run time: 00:000:364
+Thread no: 139723565754112, run time: 00:000:231
+Thread no: 139723557361408, run time: 00:000:245
+Thread no: 139723548968704, run time: 00:000:221
+FULL TIME: 00:001:919
+
+
+
+
+
+_______________________________ IMG SIZE: 640 480 _______________________________
+
+---------------mode: numbers --- threads: 1 --- img size: 640 x 480---------------------
+Thread no: 140023644411648, run time: 00:000:891
+FULL TIME: 00:001:081
+
+
+---------------mode: numbers --- threads: 2 --- img size: 640 x 480---------------------
+Thread no: 139775745951488, run time: 00:002:725
+Thread no: 139775737558784, run time: 00:002:946
+FULL TIME: 00:003:442
+
+
+---------------mode: numbers --- threads: 4 --- img size: 640 x 480---------------------
+Thread no: 140440826566400, run time: 00:001:079
+Thread no: 140440818173696, run time: 00:001:090
+Thread no: 140440809780992, run time: 00:001:865
+Thread no: 140440801388288, run time: 00:001:010
+FULL TIME: 00:001:982
+
+
+---------------mode: numbers --- threads: 8 --- img size: 640 x 480---------------------
+Thread no: 140383304795904, run time: 00:001:754
+Thread no: 140383296403200, run time: 00:001:762
+Thread no: 140383288010496, run time: 00:001:525
+Thread no: 140383279617792, run time: 00:001:734
+Thread no: 140383271225088, run time: 00:001:768
+Thread no: 140383262832384, run time: 00:002:510
+Thread no: 140383254439680, run time: 00:001:117
+Thread no: 140383246046976, run time: 00:001:116
+FULL TIME: 00:002:675
+
+
+---------------mode: numbers --- threads: 16 --- img size: 640 x 480---------------------
+Thread no: 139941403137792, run time: 00:002:270
+Thread no: 139941394745088, run time: 00:002:253
+Thread no: 139941386352384, run time: 00:002:054
+Thread no: 139941377959680, run time: 00:002:309
+Thread no: 139941369566976, run time: 00:002:278
+Thread no: 139941361174272, run time: 00:002:244
+Thread no: 139941352781568, run time: 00:001:081
+Thread no: 139941344388864, run time: 00:002:158
+Thread no: 139941335996160, run time: 00:001:274
+Thread no: 139941327603456, run time: 00:001:831
+Thread no: 139941319210752, run time: 00:001:251
+Thread no: 139941310818048, run time: 00:001:065
+Thread no: 139941302425344, run time: 00:001:024
+Thread no: 139941294032640, run time: 00:000:895
+Thread no: 139941285639936, run time: 00:001:158
+Thread no: 139941277247232, run time: 00:001:139
+FULL TIME: 00:006:541
+
+
+
+
+
+_______________________________ IMG SIZE: 800 800 _______________________________
+
+---------------mode: numbers --- threads: 1 --- img size: 800 x 800---------------------
+Thread no: 140337091540736, run time: 00:002:576
+FULL TIME: 00:002:749
+
+
+---------------mode: numbers --- threads: 2 --- img size: 800 x 800---------------------
+Thread no: 139666375325440, run time: 00:006:851
+Thread no: 139666366932736, run time: 00:007:753
+FULL TIME: 00:007:904
+
+
+---------------mode: numbers --- threads: 4 --- img size: 800 x 800---------------------
+Thread no: 140360208922368, run time: 00:002:665
+Thread no: 140360200529664, run time: 00:004:596
+Thread no: 140360192136960, run time: 00:002:591
+Thread no: 140360183744256, run time: 00:004:596
+FULL TIME: 00:004:780
+
+
+---------------mode: numbers --- threads: 8 --- img size: 800 x 800---------------------
+Thread no: 140594730194688, run time: 00:004:444
+Thread no: 140594721801984, run time: 00:004:198
+Thread no: 140594713409280, run time: 00:004:168
+Thread no: 140594705016576, run time: 00:003:121
+Thread no: 140594696623872, run time: 00:004:183
+Thread no: 140594688231168, run time: 00:003:651
+Thread no: 140594679838464, run time: 00:004:519
+Thread no: 140594671445760, run time: 00:004:154
+FULL TIME: 00:005:549
+
+
+---------------mode: numbers --- threads: 16 --- img size: 800 x 800---------------------
+Thread no: 140260206810880, run time: 00:003:938
+Thread no: 140260198418176, run time: 00:027:765
+Thread no: 140260190025472, run time: 00:015:230
+Thread no: 140260181632768, run time: 00:004:223
+Thread no: 140260173240064, run time: 00:008:501
+Thread no: 140260164847360, run time: 00:004:210
+Thread no: 140260156454656, run time: 00:004:252
+Thread no: 140260148061952, run time: 00:012:397
+Thread no: 140260139669248, run time: 00:004:179
+Thread no: 140260131276544, run time: 00:006:007
+Thread no: 140260122883840, run time: 00:004:257
+Thread no: 140260114491136, run time: 00:004:115
+Thread no: 140260106098432, run time: 00:004:200
+Thread no: 140260097705728, run time: 00:003:838
+Thread no: 140260089313024, run time: 00:016:457
+Thread no: 140260080920320, run time: 00:006:603
+FULL TIME: 00:028:679
+
+
