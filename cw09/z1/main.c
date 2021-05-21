@@ -2,13 +2,16 @@
 
 int elves_waiting = 0;
 int reindeers_back = 0;
-int is_santa_asleep = 0;
 int deliveries_done = 0;
 int elves_waiting_arr[3] = {0, 0, 0};
 int reindeers_asleep = 0;
+int* reindeers_ids;
+int* elves_ids;
+
 pthread_t *reindeers_thread;
 pthread_t *elves_thread;
 pthread_t santa_thread;
+
 pthread_mutex_t santa_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t reindeer_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t reindeer_mutex_wait = PTHREAD_MUTEX_INITIALIZER; 
@@ -17,20 +20,24 @@ pthread_mutex_t elves_mutex_wait = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t wake_up_santa_cond = PTHREAD_COND_INITIALIZER;
 pthread_cond_t reindeers_delivering = PTHREAD_COND_INITIALIZER;
 pthread_cond_t elves_resolving =PTHREAD_COND_INITIALIZER;
+void cleanup();
+
 
 void* santa_func(void* arg){
+  atexit(cleanup);
   while(1){  
+    
     pthread_mutex_lock(&santa_mutex);
     pthread_cond_wait(&wake_up_santa_cond, &santa_mutex);
     printf("Mikolaj: budze sie\n");
-    is_santa_asleep = 0;
     pthread_mutex_lock(&reindeer_mutex);
     if(reindeers_back == REINDEERS_NO){
-        printf("Mikolaj: Dostarczam zabawki\n");
+        printf("Mikolaj: %d raz dostarczam zabawki\n",++deliveries_done);
         
         usleep(rand_sleep(2, 4));
-        deliveries_done++;
-        if(deliveries_done == 3){ 
+        if(deliveries_done == DELIVERY_NO){ 
+          pthread_mutex_unlock(&reindeer_mutex);
+          
           printf("Mikolaj: rozwiozlem prezenty 3 razy, koncze prace\n");
           exit(0);
           }
@@ -53,7 +60,7 @@ void* santa_func(void* arg){
         pthread_mutex_unlock(&elves_mutex_wait);
 
     }
-      pthread_mutex_unlock(&reindeer_mutex);
+    pthread_mutex_unlock(&reindeer_mutex);
     printf("Mikolaj: zasypiam\n");
     pthread_mutex_unlock(&santa_mutex);
 
@@ -114,37 +121,50 @@ void* elf_func(void* arg){
     }
   }
 }
-void clenup(){
-  
+
+void cleanup(){
+  for(int i = 0; i < REINDEERS_NO; i++)  if(pthread_cancel(reindeers_thread[i]) != 0) printf("XD");
+  for(int i = 0; i < ELVES_NO; i++)pthread_cancel(elves_thread[i]);
+  pthread_join(santa_thread, NULL);
+  free(reindeers_thread);
+  free(elves_thread);
+  free(reindeers_ids);
+  free(elves_ids);
+  pthread_cond_destroy(&wake_up_santa_cond);
+  pthread_cond_destroy(&elves_resolving);
+  pthread_cond_destroy(&reindeers_delivering);
+  pthread_mutex_destroy(&santa_mutex);
+  pthread_mutex_destroy(&reindeer_mutex);
+  pthread_mutex_destroy(&reindeer_mutex_wait);
+  pthread_mutex_destroy(&elves_mutex);
+  pthread_mutex_destroy(&elves_mutex_wait);
+  printf("Wszystko wyczyszczone, koncze prace\n");
+
 }
+
+
 int main(){
   reindeers_thread = calloc(REINDEERS_NO, sizeof(pthread_t));
-  int* reindeers_ids= calloc(REINDEERS_NO, sizeof(int));
-  int* elves_ids = calloc(ELVES_NO, sizeof(int));
+  reindeers_ids = calloc(REINDEERS_NO, sizeof(int));
+  elves_ids = calloc(ELVES_NO, sizeof(int));
   elves_thread = calloc(ELVES_NO, sizeof(pthread_t));
 
   pthread_create(&santa_thread, NULL, &santa_func, NULL);
   printf("Stworzono mikolaja\n");
+
   for(int i = 0; i < REINDEERS_NO; i++){
     reindeers_ids[i] = i + 10;
     pthread_create(&reindeers_thread[i], NULL, &reindeer_func, &reindeers_ids[i]);
     printf("Stworzono renifera %d\n", reindeers_ids[i]);
   }
+
   for(int i = 0; i < ELVES_NO; i++){
     elves_ids[i] = i + 20;
     pthread_create(&elves_thread[i], NULL, &elf_func, &elves_ids[i]);
     printf("Stworzono elfa %d\n", elves_ids[i]);
   }
-  pthread_join(santa_thread, NULL);
+  
+  
+  return 0;
 
- for (int i = 0; i < REINDEERS_NO; i++){
-        pthread_join(reindeers_thread[i], NULL);
-        sleep(1);
-    }
- for (int i = 0; i < ELVES_NO; i++){
-        pthread_join(elves_thread[i], NULL);
-    }
-
-  free(reindeers_thread);
-  free(elves_thread);
 }
