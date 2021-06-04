@@ -4,12 +4,11 @@ int inet_socket;
 int port_no;
 int ready_to_play = -1;
 char *socket_path;
-struct sockaddr local_socket_addr;
-struct sockaddr_in inet_socket_addr;
-
+pthread_t ping_thread, socket_thread;
 client clients[MAX_CLIENTS];
-
+pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER; 
 void stop_server(){
+    pthread_cancel(socket_thread);
     char stop_msg[MAX_MSG_LEN];
     sprintf(stop_msg, "%d", DISCONNECT);
     for(int i = 0; i < MAX_CLIENTS; i++){
@@ -37,6 +36,9 @@ int get_free_idx(){
 }
 
 void start_server(){
+
+    struct sockaddr local_socket_addr;
+    struct sockaddr_in inet_socket_addr;
     if((local_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) exit_error("Unable to create local socket");
     local_socket_addr.sa_family = AF_UNIX;
 
@@ -60,6 +62,7 @@ void start_server(){
         clients[i].to_delete = 0;
         clients[i].symbol = '!';
         clients[i].game = NULL;
+
     }
 }
 
@@ -146,10 +149,13 @@ void disconnect_client(int index){
     if((opponent = clients[index].opponent) != -1){
         printf("Client %s is currently in game with %s\n", clients[index].name, clients[opponent].name);
         clients[opponent].opponent = -1;
-       // disconnect_client(opponent);
+        char msg[MAX_MSG_LEN];
+        sprintf(msg, "%d", DISCONNECT);
+        send(clients[opponent].fd, msg, MAX_MSG_LEN, 0);
+        disconnect_client(opponent);
     }
-    if(shutdown(clients[index].fd, SHUT_RDWR) == -1) exit_error("Unable to shutdown");
-    if(close(clients[index].fd) == -1) exit_error("Unable to close client");
+    shutdown(clients[index].fd, SHUT_RDWR);
+    close(clients[index].fd);
     clients[index].fd = -1;
     strcpy(clients[index].name, "\0");
     clients[index].to_delete = 0;
@@ -185,7 +191,7 @@ char check_winner(char* board){
 }
 
 void update_board(int index, char* msg){
-    
+
     int opp_index = clients[index].opponent;
     printf("Updating game between %s and %s: ", clients[index].name, clients[opp_index].name);
     gameplay *game = clients[index].game;
@@ -198,17 +204,22 @@ void update_board(int index, char* msg){
     sscanf(msg, "%d %9s",&x, board);
     char winner = check_winner(board);
     if((winner == 'o' || winner == 'x')){
-        if(clients[index].symbol == winner){
-            printf("Game is over and the winner is %s", clients[index].name);
-        }else{
-            printf("Game is over and the winner is %s", clients[opp_index].name);
-        }
+        char end_msg[MAX_MSG_LEN];
+        printf("Game is over and the winner is %c\n", winner);
+        sprintf(end_msg, "%d %c", END_GAME, winner);
+        send(clients[index].fd, end_msg, MAX_MSG_LEN, 0);
+        send(clients[opp_index].fd, end_msg, MAX_MSG_LEN, 0);
+        return;
     }
     game->board = board;
     game->turn_no++;
     printf("%d turn\n", game->turn_no);
     if(game->turn_no == 9){
         printf("Game is over and there's no winner\n");
+        char end_msg[MAX_MSG_LEN];
+        sprintf(end_msg, "%d %c", END_GAME, '.');
+        send(clients[index].fd, end_msg, MAX_MSG_LEN, 0);
+        send(clients[opp_index].fd, end_msg, MAX_MSG_LEN, 0);
     }
     char reply_msg[MAX_MSG_LEN];
     sprintf(reply_msg, "%d %s", MOVE, board);
@@ -216,13 +227,15 @@ void update_board(int index, char* msg){
 
 }
 
-void socket_service(){
+void *socket_service(){
     struct pollfd client_descriptors[MAX_CLIENTS];
     struct pollfd server_descriptors[2];
     char msg[MAX_MSG_LEN];
     int msg_code;
     while(1){
         fflush(stdout);
+
+        pthread_mutex_lock(&clients_mutex);
         for (int i = 0; i < MAX_CLIENTS; i++)
         {
             if(clients[i].name != NULL){
@@ -266,10 +279,37 @@ void socket_service(){
             }
 
         }
+        pthread_mutex_unlock(&clients_mutex);
     }
 }
 
-void ping_service(){}
+void ping_service(){
+    while(1){
+        sleep(PING_CYCLE);
+        pthread_mutex_lock(&clients_mutex);
+        printf("Pinging service started\n");
+        for(int i = 0; i < MAX_CLIENTS; i++){
+            if(clients[i].fd != -1){
+                clients[i].to_delete = 1;
+                char buf[MAX_MSG_LEN];
+                sprintf(buf, "%d", PING);
+                send(clients[i].fd, buf, MAX_MSG_LEN, 0);
+            }
+        }
+        pthread_mutex_unlock(&clients_mutex);
+        sleep(PING_CYCLE);
+        pthread_mutex_lock(&clients_mutex);
+        for(int i = 0; i < MAX_CLIENTS; i++){
+            if(clients[i].to_delete == 1 ){
+                printf("No ping response from: %s\n", clients[i].name);
+                disconnect_client(i);
+                }
+        }
+        pthread_mutex_unlock(&clients_mutex);
+        printf("Pinging service ended\n");
+
+    }
+}
 
 int main(int argc, char** argv){
     if(argc != 3){
@@ -283,5 +323,7 @@ int main(int argc, char** argv){
 
 
     start_server();
-    socket_service();
+    pthread_create(&socket_thread, NULL, (void*) socket_service, NULL);
+    pthread_create(&ping_thread, NULL, (void*) ping_service, NULL);
+    pthread_join(socket_thread, NULL);
 }

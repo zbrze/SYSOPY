@@ -23,7 +23,7 @@
 #define IPv4_ADDRESS "127.0.0.1"
 #define LOCAL 1
 #define NET 2
-
+#define PING_CYCLE 8
 typedef enum msg_type{
     CONNECT = 1,
     DISCONNECT = 2,

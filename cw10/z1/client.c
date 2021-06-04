@@ -48,23 +48,31 @@ void connect_to_server(char* port_no){
 
 }
 
+void ping_response(){
+    char buf[MAX_MSG_LEN];
+    sprintf(buf, "%d", PING);
+    send(server_fd, buf, MAX_MSG_LEN, 0);
+
+}
+
 void stop_client(){
+    printf("Shutting down\n");
     char stop_msg[MAX_MSG_LEN];
     sprintf(stop_msg, "%d", DISCONNECT);
     send(server_fd, stop_msg, MAX_MSG_LEN, 0);
-    if(shutdown(server_fd, SHUT_RDWR) == -1) exit_error("Shutdown failure");
-    if(close(server_fd) == -1) exit_error("Close failure");
-
+    shutdown(server_fd, SHUT_RDWR);
+    close(server_fd);
+    exit(EXIT_SUCCESS);
 }
+
 void* check_msg(){
     char msg[MAX_MSG_LEN];
     int msg_code;
     while(1){
         recv(server_fd, msg, MAX_MSG_LEN, 0);
         sscanf(msg, "%d", &msg_code);
-        if(msg_code == DISCONNECT) exit(0);
+        if(msg_code == DISCONNECT) stop_client();
         if(msg_code == PING) ping_response();
-        
     }
 }
 
@@ -85,12 +93,8 @@ void make_move(char* board){
     sprintf(msg, "%d %s", MOVE, board);
     send(server_fd, msg, MAX_MSG_LEN, 0);
     printf("Wait for your opponent's move\n");
-
+    pthread_cancel(receive_thread);
     pthread_join(receive_thread, NULL);
-}
-
-void ping_response(){
-
 }
 
 int main(int argc, char** argv){
@@ -109,7 +113,7 @@ int main(int argc, char** argv){
     int msg_code;
     char content[MAX_MSG_LEN];
     char board[9];
-
+    char winner;
     while(1){
         recv(server_fd, received_msg, MAX_MSG_LEN, 0);
         sscanf(received_msg, "%d", &msg_code);
@@ -122,7 +126,6 @@ int main(int argc, char** argv){
             printf("Server or my opponent stopped working.\n");
             return 0;
         case PING:
-            printf("Received a ping request\n");
             ping_response();
             break;            
         case MOVE:
@@ -135,6 +138,13 @@ int main(int argc, char** argv){
             if(symbol == 'o') make_move(board);
             else printf("Wait for your opponent move\n");
             break;
+        case END_GAME:
+            printf("Game over: ");
+            sscanf(received_msg, "%d %c ", &msg_code, &winner);
+            if(symbol == winner) printf("YOU WON\n");
+            else if(winner == '.') printf("DRAW\n");
+            else printf("YOU LOST\n");
+            return 0;
         default:
             return -1;
         }
