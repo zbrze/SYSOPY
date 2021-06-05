@@ -173,9 +173,6 @@ void disconnect_client(char* name){
 
 char check_winner(char* board){
    int count = 0;
-   char board_[9] = { 'o', 'x', '.', 'o', 'x', '.', '.', '.', '.'};
-
-    //sscanf(board, "%s", board_);
     for(int i = 0; i < 9; i++){
         if(board[i] =='x') count++;
         else if(board[i] =='o') count--;
@@ -183,17 +180,10 @@ char check_winner(char* board){
         if(count == -3) return 'o';
         if(i % 3 == 2) count = 0;
     }
-    count = 0;
-    for(int i = 0; i < 3; i++){
-        
-        for(int j = 0; j <= 9; j +=3){
-            if(board[j + i] == 'x') count++;
-            else if(board[j + i] == 'o') count--;
-            if(count == 3){  printf("%s, %d\n", board, strcmp(board, board_));return 'x';}
-            if(count == -3) {  printf("%s, %d\n", board, strcmp(board, board_));return 'o';}
-        }
-        count = 0;
-    }
+    if(board[0] == board[3] && board[3] == board[6]) return board[6];
+    if(board[1] == board[4] && board[4] == board[7]) return board[7];
+    if(board[2] == board[5] && board[5] == board[8]) return board[8];
+
     if(board[0] != '.' && board[0] == board[4] && board[4] == board[8]) return board[8];
     if(board[2] != '.' && board[2] == board[4] && board[4] == board[6]) return board[6];
     return '.';
@@ -324,6 +314,6 @@ int main(int argc, char** argv){
 
     start_server();
     pthread_create(&socket_thread, NULL, (void*) socket_service, NULL);
-    //pthread_create(&ping_thread, NULL, (void*) ping_service, NULL);
+    pthread_create(&ping_thread, NULL, (void*) ping_service, NULL);
     pthread_join(socket_thread, NULL);
 }
