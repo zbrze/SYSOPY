@@ -139,8 +139,9 @@ int main(int argc, char** argv){
             else printf("Wait for your opponent move\n");
             break;
         case END_GAME:
-            printf("Game over: ");
-            sscanf(received_msg, "%d %c ", &msg_code, &winner);
+            printf("Game over\n");
+            sscanf(received_msg, "%d %c %9c", &msg_code, &winner, board);
+            print_board(board);
             if(symbol == winner) printf("YOU WON\n");
             else if(winner == '.') printf("DRAW\n");
             else printf("YOU LOST\n");

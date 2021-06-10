@@ -7,6 +7,8 @@ char *socket_path;
 pthread_t ping_thread, socket_thread;
 client clients[MAX_CLIENTS];
 pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER; 
+
+
 void stop_server(){
     pthread_cancel(socket_thread);
     char stop_msg[MAX_MSG_LEN];
@@ -149,11 +151,14 @@ void disconnect_client(int index){
     if((opponent = clients[index].opponent) != -1){
         printf("Client %s is currently in game with %s\n", clients[index].name, clients[opponent].name);
         clients[opponent].opponent = -1;
-        char msg[MAX_MSG_LEN];
-        sprintf(msg, "%d", DISCONNECT);
-        send(clients[opponent].fd, msg, MAX_MSG_LEN, 0);
-        disconnect_client(opponent);
+        if(clients[opponent].fd != -1){ 
+                char stop_msg[MAX_MSG_LEN];
+                sprintf(stop_msg, "%d", DISCONNECT);
+                send(clients[opponent].fd, stop_msg, MAX_MSG_LEN, 0);
+                //disconnect_client(opponent);
+            }
     }
+    if(ready_to_play == index) ready_to_play = -1;
     shutdown(clients[index].fd, SHUT_RDWR);
     close(clients[index].fd);
     clients[index].fd = -1;
@@ -166,27 +171,18 @@ void disconnect_client(int index){
 }
 
 char check_winner(char* board){
-   int count = 0;
-    //sscanf(board, "%s", board_);
-    for(int i = 0; i < 9; i++){
-        if(board[i] =='x') count++;
-        else if(board[i] =='o') count--;
-        if(count == 3) return 'x';
-        if(count == -3) return 'o';
-        if(i % 3 == 2) count = 0;
-    }
-    for(int i = 0; i < 3; i++){
-        
-        for(int j = 0; j <= 9; j +=3){
-            if(board[j + i] == 'x') count++;
-            else if(board[j + i] =='o') count--;
-            if(count == 3) return 'x';
-            if(count == -3) return 'o';
-        }
-        count = 0;
-    }
-    if(board[0] != '.' && board[0] == board[4] && board[4] == board[8]) return board[8];
-    if(board[2] != '.' && board[2] == board[4] && board[4] == board[6]) return board[6];
+
+    if(board[0] == board[1] && board[1] == board[2]) return board[2];
+    if(board[3] == board[4] && board[4] == board[5]) return board[5];
+    if(board[6] == board[7] && board[7] == board[8]) return board[8];
+
+    if(board[0] == board[3] && board[3] == board[6]) return board[6];
+    if(board[1] == board[4] && board[4] == board[7]) return board[7];
+    if(board[2] == board[5] && board[5] == board[8]) return board[8];
+
+    if(board[0] == board[4] && board[4] == board[8]) return board[8];
+    if(board[2] == board[4] && board[4] == board[6]) return board[6];
+
     return '.';
 }
 
@@ -206,35 +202,39 @@ void update_board(int index, char* msg){
     if((winner == 'o' || winner == 'x')){
         char end_msg[MAX_MSG_LEN];
         printf("Game is over and the winner is %c\n", winner);
-        sprintf(end_msg, "%d %c", END_GAME, winner);
+        sprintf(end_msg, "%d %c %s", END_GAME, winner, board);
         send(clients[index].fd, end_msg, MAX_MSG_LEN, 0);
         send(clients[opp_index].fd, end_msg, MAX_MSG_LEN, 0);
-        return;
+        disconnect_client(index);
     }
-    game->board = board;
-    game->turn_no++;
-    printf("%d turn\n", game->turn_no);
-    if(game->turn_no == 9){
-        printf("Game is over and there's no winner\n");
-        char end_msg[MAX_MSG_LEN];
-        sprintf(end_msg, "%d %c", END_GAME, '.');
-        send(clients[index].fd, end_msg, MAX_MSG_LEN, 0);
-        send(clients[opp_index].fd, end_msg, MAX_MSG_LEN, 0);
+    else{
+        game->board = board;
+        game->turn_no++;
+        printf("%d turn\n", game->turn_no);
+        if(game->turn_no == 9){
+            printf("Game is over and there's no winner\n");
+            char end_msg[MAX_MSG_LEN];
+            sprintf(end_msg, "%d %c %s", END_GAME, '.', board);
+            send(clients[index].fd, end_msg, MAX_MSG_LEN, 0);
+            send(clients[opp_index].fd, end_msg, MAX_MSG_LEN, 0);
+            disconnect_client(index);
+        }
+        else{
+            char reply_msg[MAX_MSG_LEN];
+            sprintf(reply_msg, "%d %s", MOVE, board);
+            send(clients[opp_index].fd, reply_msg, MAX_MSG_LEN, 0);  
+
+        }
     }
-    char reply_msg[MAX_MSG_LEN];
-    sprintf(reply_msg, "%d %s", MOVE, board);
-    send(clients[opp_index].fd, reply_msg, MAX_MSG_LEN, 0);    
+     
 
 }
 
 void *socket_service(){
     struct pollfd client_descriptors[MAX_CLIENTS];
     struct pollfd server_descriptors[2];
-    char msg[MAX_MSG_LEN];
-    int msg_code;
+    
     while(1){
-        fflush(stdout);
-
         pthread_mutex_lock(&clients_mutex);
         for (int i = 0; i < MAX_CLIENTS; i++)
         {
@@ -259,6 +259,8 @@ void *socket_service(){
         if(poll(client_descriptors, MAX_CLIENTS, 1) == -1) exit_error("Cannot poll");
         
         for(int i = 0; i < MAX_CLIENTS; i++){
+            char msg[MAX_MSG_LEN];
+            int msg_code;
             if(clients[i].fd != -1 && client_descriptors[i].revents && POLLIN){
                 
                 recv(clients[i].fd, msg, MAX_MSG_LEN, 0);
