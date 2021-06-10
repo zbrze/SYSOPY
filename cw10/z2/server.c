@@ -120,13 +120,13 @@ void new_client(int fd, char* name, struct sockaddr* addr){
     }
     if(sendto(fd, reply, MAX_MSG_LEN, 0, (struct sockaddr *) addr, sizeof(struct sockaddr)) == -1) exit_error("Cannot send reply"); 
     if(failed == 1) return;
-  /* 
-    }*/
+
     if(ready_to_play == -1){
         ready_to_play = client_idx;
         printf("Nobody is waiting to play\n");
         sprintf(reply, "%d", WAIT);
         if(sendto(fd, reply, MAX_MSG_LEN, 0, (struct sockaddr *) addr, sizeof(struct sockaddr)) == -1) exit_error("Cannot send reply"); 
+        printf("Waiting: %d\n", client_idx);
     }else{
         int idx_2 = ready_to_play;
         ready_to_play = -1;
@@ -141,21 +141,21 @@ void disconnect_client(char* name){
     printf("%d %s\n", clients[index].fd, clients[index].name);
   
     if(index == -1 || clients[index].fd == -1){
-        printf("Smth wrong, client not connected");
         return;
     }
     
     int opponent;
     if((opponent = clients[index].opponent) != -1){
-        printf("opponents name %s\n",clients[opponent].name);
         printf("Client %s is currently in game with %s\n", clients[index].name, clients[opponent].name);
         clients[opponent].opponent = -1;
-        char msg[MAX_MSG_LEN];
-        sprintf(msg, "%d", DISCONNECT);
-        sendto(clients[opponent].fd, msg, MAX_MSG_LEN, 0, clients[opponent].addr, sizeof(struct sockaddr));
-        disconnect_client(clients[opponent].name);
+         if(clients[opponent].fd != -1){ 
+                char stop_msg[MAX_MSG_LEN];
+                sprintf(stop_msg, "%d", DISCONNECT);
+                sendto(clients[opponent].fd, stop_msg, MAX_MSG_LEN, 0, clients[opponent].addr, sizeof(struct sockaddr));
+                disconnect_client(clients[opponent].name);
+            }
     }else{
-        ready_to_play = -1;
+        if(ready_to_play == index) ready_to_play = -1;
     }
    
     //shutdown(clients[index].fd, SHUT_RDWR);
@@ -167,25 +167,20 @@ void disconnect_client(char* name){
     clients[index].symbol = '!';
     clients[index].opponent = -1;
     printf("Client succesfully disconnected\n");
-    printf("%d %s\n", index, clients[index].name);
     
 }
 
 char check_winner(char* board){
-   int count = 0;
-    for(int i = 0; i < 9; i++){
-        if(board[i] =='x') count++;
-        else if(board[i] =='o') count--;
-        if(count == 3) return 'x';
-        if(count == -3) return 'o';
-        if(i % 3 == 2) count = 0;
-    }
+    if(board[0] == board[1] && board[1] == board[2]) return board[2];
+    if(board[3] == board[4] && board[4] == board[5]) return board[5];
+    if(board[6] == board[7] && board[7] == board[8]) return board[8];
+
     if(board[0] == board[3] && board[3] == board[6]) return board[6];
     if(board[1] == board[4] && board[4] == board[7]) return board[7];
     if(board[2] == board[5] && board[5] == board[8]) return board[8];
 
-    if(board[0] != '.' && board[0] == board[4] && board[4] == board[8]) return board[8];
-    if(board[2] != '.' && board[2] == board[4] && board[4] == board[6]) return board[6];
+    if(board[0] == board[4] && board[4] == board[8]) return board[8];
+    if(board[2] == board[4] && board[4] == board[6]) return board[6];
     return '.';
 }
 
@@ -200,7 +195,6 @@ void update_board(char* name, char* board){
         return;
     }
     char winner = check_winner(board);
-    printf("WINNER: %c\n", winner);
     
     if((winner == 'o' || winner == 'x')){
         char end_msg[MAX_MSG_LEN];
@@ -208,6 +202,7 @@ void update_board(char* name, char* board){
         sprintf(end_msg, "%d %c %s", END_GAME, winner, board);
         sendto(clients[index].fd, end_msg, MAX_MSG_LEN, 0, clients[index].addr, sizeof(struct sockaddr));
         sendto(clients[opp_index].fd, end_msg, MAX_MSG_LEN, 0, clients[opp_index].addr, sizeof(struct sockaddr));
+        disconnect_client(clients[index].name);
         return;
     }
     game->board = board;
@@ -219,6 +214,7 @@ void update_board(char* name, char* board){
         sprintf(end_msg, "%d %c %s", END_GAME, '.', board);
         sendto(clients[index].fd, end_msg, MAX_MSG_LEN, 0, clients[index].addr, sizeof(struct sockaddr));
         sendto(clients[opp_index].fd, end_msg, MAX_MSG_LEN, 0, clients[opp_index].addr, sizeof(struct sockaddr));
+        disconnect_client(clients[index].name);
     }
     char reply_msg[MAX_MSG_LEN];
     sprintf(reply_msg, "%d %s", MOVE, board);

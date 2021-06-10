@@ -76,11 +76,15 @@ void stop_client(){
     exit(EXIT_SUCCESS);
 }
 
-void sigint_handler_client(int sig, siginfo_t *sig_inf, void *ucontext){
+void send_disconnect(){
     printf("Sending disconnect\n");
     char stop_msg[MAX_MSG_LEN];
     sprintf(stop_msg, "%d %s", DISCONNECT, name);
     send(server_fd, stop_msg, MAX_MSG_LEN, 0);
+}
+
+void sigint_handler_client(int sig, siginfo_t *sig_inf, void *ucontext){
+    send_disconnect();
     exit(0);
 }
 
@@ -135,7 +139,6 @@ int main(int argc, char** argv){
     char winner;
     while(1){
         recv(server_fd, received_msg, MAX_MSG_LEN, 0);
-        printf("Received: %s\n", received_msg);
         sscanf(received_msg, "%d", &msg_code);
         switch (msg_code)
         {
